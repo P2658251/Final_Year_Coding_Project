@@ -7,8 +7,8 @@ import com.google.firebase.firestore.firestore
 class Database {
     private var database: FirebaseFirestore = Firebase.firestore
 
-    fun getFilmById(callback: (Film?) -> Unit) {
-        val docRef = database.collection("film").document("Z0Fo1V9BzPZPZpdqNv82")
+    fun getFilmById(id: String, callback: (Film?) -> Unit) {
+        val docRef = database.collection("film").document(id)
 
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->

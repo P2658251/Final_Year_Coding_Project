@@ -11,4 +11,11 @@ class FilmTest {
         assertEquals(film.getName(), "Test film")
     }
 
+    @Test
+    fun getReleaseDate() {
+        var film = Film("Test film", "2020")
+
+        assertEquals(film.getReleaseDate(), "2020")
+    }
+
 }

@@ -20,9 +20,11 @@ class MainActivity : AppCompatActivity() {
 
         val db = Database()
         val filmNameTextView = findViewById<TextView>(R.id.txtFilmName)
-        db.getFilmById { film ->
+        val filmReleaseDateTextView = findViewById<TextView>(R.id.txtFilmReleaseDate)
+        db.getFilmById("3M6BznipYGRycQVOZG2H") { film ->
             if (film != null) {
                 filmNameTextView.text = film.getName()
+                filmReleaseDateTextView.text = film.getReleaseDate()
             } else {
                 filmNameTextView.text = "Film not found"
             }
