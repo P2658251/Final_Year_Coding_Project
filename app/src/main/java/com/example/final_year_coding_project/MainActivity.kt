@@ -1,34 +1,39 @@
 package com.example.final_year_coding_project
 
 import android.os.Bundle
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        setContent {
+            FilmScreen(filmId = "3M6BznipYGRycQVOZG2H")
         }
+    }
+}
 
-        val db = Database()
-        val filmNameTextView = findViewById<TextView>(R.id.txtFilmName)
-        val filmReleaseDateTextView = findViewById<TextView>(R.id.txtFilmReleaseDate)
-        db.getFilmById("3M6BznipYGRycQVOZG2H") { film ->
-            if (film != null) {
-                filmNameTextView.text = film.getName()
-                filmReleaseDateTextView.text = film.getReleaseDate()
-            } else {
-                filmNameTextView.text = "Film not found"
-            }
-        }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FilmScreen(filmId: String) {
 
+    val database = Database()
+    val film by database.getFilmById(filmId).observeAsState(initial = Film())
+
+    Column(modifier = Modifier.padding(24.dp)) {
+        Text(text = film.getName(), fontWeight = FontWeight.SemiBold)
+        Text(text = film.getReleaseDate(), color = Color.DarkGray, fontSize = 7.sp)
     }
 }

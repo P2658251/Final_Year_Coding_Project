@@ -1,5 +1,8 @@
 package com.example.final_year_coding_project
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
@@ -7,16 +10,22 @@ import com.google.firebase.firestore.firestore
 class Database {
     private var database: FirebaseFirestore = Firebase.firestore
 
-    fun getFilmById(id: String, callback: (Film?) -> Unit) {
-        val docRef = database.collection("film").document(id)
+    fun getFilmById(filmId: String): LiveData<Film> {
+         val liveData = MutableLiveData<Film>()
 
-        docRef.get()
-            .addOnSuccessListener { documentSnapshot ->
-                val film = documentSnapshot.toObject(Film::class.java)
-                callback(film) // Return the data through the callback
-            }
-            .addOnFailureListener {
-                callback(null) // Handle failure case
-            }
+         database.collection("film")
+             .document(filmId)
+             .get()
+             .addOnSuccessListener { document ->
+                 if (document.exists()) {
+                     val myObject = document.toObject(Film::class.java)
+                     liveData.value = myObject!!
+                 }
+             }
+             .addOnFailureListener { exception ->
+                 Log.e("Firestore", "Error getting documents: ", exception)
+             }
+
+         return liveData
     }
 }
