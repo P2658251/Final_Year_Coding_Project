@@ -18,8 +18,8 @@ class Database {
              .get()
              .addOnSuccessListener { document ->
                  if (document.exists()) {
-                     val myObject = document.toObject(Film::class.java)
-                     liveData.value = myObject!!
+                     val filmFromDatabase = document.toObject(Film::class.java)
+                     liveData.value = filmFromDatabase!!
                  }
              }
              .addOnFailureListener { exception ->

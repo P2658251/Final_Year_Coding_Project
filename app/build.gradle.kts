@@ -66,6 +66,8 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation ("androidx.compose.runtime:runtime-livedata:1.4.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
