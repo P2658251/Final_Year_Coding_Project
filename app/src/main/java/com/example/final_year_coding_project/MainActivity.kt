@@ -3,13 +3,11 @@ package com.example.final_year_coding_project
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
@@ -17,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -25,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import java.nio.file.WatchEvent
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +41,7 @@ fun FilmScreen(filmId: String) {
     val database = Database()
     val film by database.getFilmById(filmId).observeAsState(initial = Film())
 
-    Column(modifier = Modifier.padding(24.dp)) {
+    Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Row {
             Text(text = film.getName(), fontWeight = FontWeight.SemiBold, fontSize = 30.sp, textAlign = TextAlign.Start)
             Text(text = film.getReleaseDate(), textAlign = TextAlign.End, modifier = Modifier.weight(1f))
@@ -52,10 +50,10 @@ fun FilmScreen(filmId: String) {
         AsyncImage(
             model = film.getPosterImage(),
             contentDescription = null,
-            modifier = Modifier.clip(RoundedCornerShape(30.dp))
+            modifier = Modifier.clip(RoundedCornerShape(30.dp)),
         )
         LinearProgressIndicator(
-            progress = 0.5f,
+            progress = film.calculateLikesToDislikesRatio(),
             modifier = Modifier.fillMaxWidth()
                 .padding(20.dp),
             color = Color.Green,
