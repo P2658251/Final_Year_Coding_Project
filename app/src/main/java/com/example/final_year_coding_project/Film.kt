@@ -1,12 +1,17 @@
 package com.example.final_year_coding_project
 
 data class Film (
+    private val id: String = "",
     private val name: String = "",
     private val releaseDate: String = "",
     private val director: String = "",
     private val posterImage: String = ""
 )
 {
+    fun getId():String{
+        return this.id
+    }
+
      fun getName(): String {
         return this.name
     }
