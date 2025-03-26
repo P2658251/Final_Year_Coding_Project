@@ -3,21 +3,30 @@ package com.example.final_year_coding_project
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,10 +48,22 @@ class MainActivity : ComponentActivity() {
 fun FilmScreen(filmId: String) {
 
     val database = Database()
-    val film by database.getFilmById(filmId).observeAsState(initial = Film())
+    val filmLiveData = database.getFilmById(filmId).observeAsState(initial = Film())
+    // Create a MutableState to track changes manually
+    var film by remember { mutableStateOf(filmLiveData.value) }
+    // Observe changes from the database
+    LaunchedEffect(filmLiveData.value) {
+        film = filmLiveData.value
+    }
+    var hasLiked by remember { mutableStateOf(false) }
+    val colorOfLikeButton = if (!hasLiked) Color.DarkGray else Color.Green
+    val backgroundBrush = Brush.verticalGradient(listOf(Color.White, Color.DarkGray))
 
-    Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
+    Column(modifier = Modifier
+        .background(backgroundBrush)
+        .fillMaxWidth()
+        .fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally,) {
+        Row (modifier = Modifier.padding(20.dp)){
             Text(text = film.getName(), fontWeight = FontWeight.SemiBold, fontSize = 30.sp, textAlign = TextAlign.Start)
             Text(text = film.getReleaseDate(), textAlign = TextAlign.End, modifier = Modifier.weight(1f))
         }
@@ -52,12 +73,35 @@ fun FilmScreen(filmId: String) {
             contentDescription = null,
             modifier = Modifier.clip(RoundedCornerShape(30.dp)),
         )
+        Row{
+            Text(text = film.getLikes().toString(), textAlign = TextAlign.Start, color = Color.Green, modifier = Modifier
+                .weight(0.5f)
+                .offset(20.dp))
+            Button(onClick = {
+                if (hasLiked){
+                    database.removeLikeFromFilmById(film.getId())
+                    film = film.copy(likes = film.getLikes() - 1)
+                    hasLiked = false
+                }
+                else{
+                    database.addLikeToFilmById(film.getId())
+                    film = film.copy(likes = film.getLikes() + 1)
+                    hasLiked = true
+                }// update film likes manually so that the likes text field is updated
+            }, colors = ButtonDefaults.buttonColors(containerColor = colorOfLikeButton)) {
+                Text("👍")
+            }
+            Text(text = film.getDislikes().toString(), textAlign = TextAlign.End, color = Color.Red, modifier = Modifier
+                .weight(0.5f)
+                .offset(-20.dp))
+        }
         LinearProgressIndicator(
-            progress = film.calculateLikesToDislikesRatio(),
-            modifier = Modifier.fillMaxWidth()
+            progress = { film.calculateLikesToDislikesRatio() },
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(20.dp),
             color = Color.Green,
-            trackColor = Color.Red
+            trackColor = Color.Red,
         )
     }
 }
