@@ -57,6 +57,8 @@ fun FilmScreen(filmId: String) {
     }
     var hasLiked by remember { mutableStateOf(false) }
     val colorOfLikeButton = if (!hasLiked) Color.DarkGray else Color.Green
+    var hasDisliked by remember { mutableStateOf(false) }
+    val colorOfDislikeButton = if (!hasDisliked) Color.DarkGray else Color.Red
     val backgroundBrush = Brush.verticalGradient(listOf(Color.White, Color.DarkGray))
 
     Column(modifier = Modifier
@@ -78,18 +80,66 @@ fun FilmScreen(filmId: String) {
                 .weight(0.5f)
                 .offset(20.dp))
             Button(onClick = {
-                if (hasLiked){
+                var newLikes = film.getLikes()
+                var newDislikes = film.getDislikes()
+
+                if (hasLiked) {
                     database.removeLikeFromFilmById(film.getId())
-                    film = film.copy(likes = film.getLikes() - 1)
+                    newLikes -= 1
+
                     hasLiked = false
-                }
-                else{
+                } else if (hasDisliked) {
                     database.addLikeToFilmById(film.getId())
-                    film = film.copy(likes = film.getLikes() + 1)
+                    newLikes += 1
+
+                    database.removeDislikeFromFilmById(film.getId())
+                    newDislikes -= 1
+
                     hasLiked = true
-                }// update film likes manually so that the likes text field is updated
-            }, colors = ButtonDefaults.buttonColors(containerColor = colorOfLikeButton)) {
+                    hasDisliked = false
+                } else {
+                    database.addLikeToFilmById(film.getId())
+                    newLikes += 1
+
+                    hasLiked = true
+                }
+
+                film = film.copy(likes = newLikes, dislikes = newDislikes) // Single state update
+            }, colors = ButtonDefaults.buttonColors(containerColor = colorOfLikeButton),
+                modifier = Modifier.offset(-50.dp)
+            ) {
                 Text("👍")
+            }
+            Button(onClick = {
+                var newLikes = film.getLikes()
+                var newDislikes = film.getDislikes()
+
+                if (hasDisliked) {
+                    database.removeDislikeFromFilmById(film.getId())
+                    newDislikes -= 1
+
+                    hasDisliked = false
+                } else if (hasLiked) {
+                    database.addDislikeToFilmById(film.getId())
+                    newDislikes += 1
+
+                    database.removeLikeFromFilmById(film.getId())
+                    newLikes -= 1
+
+                    hasDisliked = true
+                    hasLiked = false
+                } else {
+                    database.addDislikeToFilmById(film.getId())
+                    newDislikes += 1
+
+                    hasDisliked = true
+                }
+
+                film = film.copy(likes = newLikes, dislikes = newDislikes)
+            }, colors = ButtonDefaults.buttonColors(containerColor = colorOfDislikeButton),
+                modifier = Modifier.offset(50.dp)
+            ) {
+                Text("👎")
             }
             Text(text = film.getDislikes().toString(), textAlign = TextAlign.End, color = Color.Red, modifier = Modifier
                 .weight(0.5f)

@@ -40,4 +40,14 @@ class Database {
         database.collection("film").document(filmId)
             .update("likes", FieldValue.increment(-1))
     }
+
+    fun addDislikeToFilmById(filmId: String){
+        database.collection("film").document(filmId)
+            .update("dislikes", FieldValue.increment(1))
+    }
+
+    fun removeDislikeFromFilmById(filmId: String) {
+        database.collection("film").document(filmId)
+            .update("dislikes", FieldValue.increment(-1))
+    }
 }
