@@ -8,6 +8,7 @@ data class Film (
     private val posterImage: String = "",
     private var likes: Int = 0,
     private val dislikes: Int = 0,
+    private val description: String = "",
 )
 {
     fun getId():String{
@@ -40,6 +41,10 @@ data class Film (
 
     fun getDislikes(): Int{
         return this.dislikes
+    }
+
+    fun getDescription(): String{
+        return this.description
     }
 
     fun calculateLikesToDislikesRatio(): Float {

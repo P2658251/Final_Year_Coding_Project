@@ -66,7 +66,7 @@ fun FilmScreen(filmId: String) {
         .fillMaxWidth()
         .fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally,) {
         Row (modifier = Modifier.padding(20.dp)){
-            Text(text = film.getName(), fontWeight = FontWeight.SemiBold, fontSize = 30.sp, textAlign = TextAlign.Start)
+            Text(text = film.getName(), fontWeight = FontWeight.Bold, fontSize = 30.sp, textAlign = TextAlign.Start)
             Text(text = film.getReleaseDate(), textAlign = TextAlign.End, modifier = Modifier.weight(1f))
         }
         Text(text = "Directed by ${film.getDirector()}", color = Color.DarkGray, fontSize = 18.sp)
@@ -75,6 +75,7 @@ fun FilmScreen(filmId: String) {
             contentDescription = null,
             modifier = Modifier.clip(RoundedCornerShape(30.dp)),
         )
+        Text(text = film.getDescription(), textAlign = TextAlign.Center, modifier = Modifier.padding(10.dp))
         Row{
             Text(text = film.getLikes().toString(), textAlign = TextAlign.Start, color = Color.Green, modifier = Modifier
                 .weight(0.5f)
