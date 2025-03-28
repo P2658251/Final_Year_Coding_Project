@@ -46,8 +46,8 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilmScreen(filmId: String) {
-
     val database = Database()
+
     val filmLiveData = database.getFilmById(filmId).observeAsState(initial = Film())
     // Create a MutableState to track changes manually
     var film by remember { mutableStateOf(filmLiveData.value) }
@@ -56,11 +56,9 @@ fun FilmScreen(filmId: String) {
         film = filmLiveData.value
     }
     var hasLiked by remember { mutableStateOf(false) }
-    val colorOfLikeButton = if (!hasLiked) Color.DarkGray else Color.Green
     var hasDisliked by remember { mutableStateOf(false) }
-    val colorOfDislikeButton = if (!hasDisliked) Color.DarkGray else Color.Red
-    val backgroundBrush = Brush.verticalGradient(listOf(Color.White, Color.DarkGray))
 
+    val backgroundBrush = Brush.verticalGradient(listOf(Color.White, Color.DarkGray))
     Column(modifier = Modifier
         .background(backgroundBrush)
         .fillMaxWidth()
@@ -79,7 +77,10 @@ fun FilmScreen(filmId: String) {
         Row{
             Text(text = film.getLikes().toString(), textAlign = TextAlign.Start, color = Color.Green, modifier = Modifier
                 .weight(0.5f)
-                .offset(20.dp))
+                .offset(20.dp)
+            )
+
+            val colourOfLikeButton = if (!hasLiked) Color.DarkGray else Color.Green
             Button(onClick = {
                 var newLikes = film.getLikes()
                 var newDislikes = film.getDislikes()
@@ -106,11 +107,13 @@ fun FilmScreen(filmId: String) {
                 }
 
                 film = film.copy(likes = newLikes, dislikes = newDislikes) // Single state update
-            }, colors = ButtonDefaults.buttonColors(containerColor = colorOfLikeButton),
+            }, colors = ButtonDefaults.buttonColors(containerColor = colourOfLikeButton),
                 modifier = Modifier.offset(-50.dp)
             ) {
                 Text("👍")
             }
+
+            val colourOfDislikeButton = if (!hasDisliked) Color.DarkGray else Color.Red
             Button(onClick = {
                 var newLikes = film.getLikes()
                 var newDislikes = film.getDislikes()
@@ -137,7 +140,7 @@ fun FilmScreen(filmId: String) {
                 }
 
                 film = film.copy(likes = newLikes, dislikes = newDislikes)
-            }, colors = ButtonDefaults.buttonColors(containerColor = colorOfDislikeButton),
+            }, colors = ButtonDefaults.buttonColors(containerColor = colourOfDislikeButton),
                 modifier = Modifier.offset(50.dp)
             ) {
                 Text("👎")
@@ -146,13 +149,16 @@ fun FilmScreen(filmId: String) {
                 .weight(0.5f)
                 .offset(-20.dp))
         }
+
+        val colourOfRatingBar = if (film.getLikes() == 0 && film.getDislikes() == 0) Color.DarkGray else Color.Green
+        val trackColourOfRatingBar = if (film.getLikes() == 0 && film.getDislikes() == 0) Color.DarkGray else Color.Red
         LinearProgressIndicator(
             progress = { film.calculateLikesToDislikesRatio() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp),
-            color = Color.Green,
-            trackColor = Color.Red,
+            color = colourOfRatingBar,
+            trackColor = trackColourOfRatingBar,
         )
     }
 }
