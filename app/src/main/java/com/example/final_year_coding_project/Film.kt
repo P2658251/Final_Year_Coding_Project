@@ -3,6 +3,7 @@ package com.example.final_year_coding_project
 data class Film (
     private var id: String = "",
     private val name: String = "",
+    private val tagline: String = "",
     private val releaseDate: String = "",
     private val director: String = "",
     private val posterImage: String = "",
@@ -45,6 +46,10 @@ data class Film (
 
     fun getDescription(): String{
         return this.description
+    }
+
+    fun getTagline(): String {
+        return this.tagline
     }
 
     fun calculateLikesToDislikesRatio(): Float {

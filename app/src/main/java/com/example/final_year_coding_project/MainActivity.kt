@@ -1,5 +1,7 @@
 package com.example.final_year_coding_project
 
+import android.R
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +18,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,19 +36,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import java.nio.file.WatchEvent
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val filmId = intent.getStringExtra("film_id") ?: ""
         setContent {
-            FilmScreen(filmId = "3M6BznipYGRycQVOZG2H")
+            FilmScreen(filmId = filmId, this)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilmScreen(filmId: String) {
+fun FilmScreen(filmId: String, activity: MainActivity) {
     val database = Database()
 
     val filmLiveData = database.getFilmById(filmId).observeAsState(initial = Film())
@@ -62,6 +68,16 @@ fun FilmScreen(filmId: String) {
         .fillMaxWidth()
         .fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally,)
     {
+        TextButton(
+            onClick = {
+                val intent = Intent(activity, FilmViewsActivity::class.java)
+                activity.startActivity(intent)
+            },
+            modifier = Modifier.align(alignment = Alignment.Start)
+        ) {
+            Text(text = "< Back",
+                color = Color.Black)
+        }
         ComposeFilmDetails(film)
         film = composeLikeAndDislikeButtons(film, database)
         ComposeRatingsRatioBar(film)
@@ -88,6 +104,12 @@ private fun ComposeFilmDetails(film: Film) {
         model = film.getPosterImage(),
         contentDescription = null,
         modifier = Modifier.clip(RoundedCornerShape(30.dp)),
+    )
+    Text(
+        text = film.getTagline(),
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(10.dp)
     )
     Text(
         text = film.getDescription(),
