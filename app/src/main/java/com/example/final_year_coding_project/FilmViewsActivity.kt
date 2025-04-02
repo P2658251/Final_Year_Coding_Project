@@ -1,6 +1,5 @@
 package com.example.final_year_coding_project
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -34,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import coil3.compose.AsyncImage
 
 class FilmViewsActivity : ComponentActivity() {
@@ -100,7 +98,7 @@ fun FilmViewsScreen(activity: FilmViewsActivity) {
 fun FilmItem(film: Film, activity: FilmViewsActivity){
     Card(modifier = Modifier
         .fillMaxWidth()
-        .padding(8.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        .padding(6.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         onClick = { goToFilmView(film, activity) }) {
         Row (modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically){
             AsyncImage(
