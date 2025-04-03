@@ -1,6 +1,5 @@
 package com.example.final_year_coding_project
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -36,7 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import java.nio.file.WatchEvent
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -165,7 +163,7 @@ private fun composeLikeAndDislikeButtons(
 
                 film1 = film1.copy(likes = newLikes, dislikes = newDislikes) // Single state update
             }, colors = ButtonDefaults.buttonColors(containerColor = colourOfLikeButton),
-            modifier = Modifier.offset(-50.dp)
+            modifier = Modifier.offset((-50).dp)
         ) {
             Text("👍")
         }
