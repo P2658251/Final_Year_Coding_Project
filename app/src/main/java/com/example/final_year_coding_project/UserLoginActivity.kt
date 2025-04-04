@@ -29,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,7 @@ class UserLoginActivity : ComponentActivity() {
 }
 
 @Composable
-fun UserLoginScreen(activity: UserLoginActivity) {
+private fun UserLoginScreen(activity: UserLoginActivity) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()) {
@@ -65,9 +66,10 @@ fun UserLoginScreen(activity: UserLoginActivity) {
                 label = { Text("Enter your username") },
                 modifier = Modifier.padding(10.dp)
             )
-            ComposePasswordTextField()
-            Button(onClick = {login()}) {
-                Text(text = "Login")
+            var passwordInput by remember { mutableStateOf("") }
+            passwordInput = composePasswordTextField("Enter your password")
+            Button(onClick = {login(activity)}) {
+                Text(text = "Login", color = Color.White)
             }
             Text(text = "Don't have an account?", modifier = Modifier.padding(top = 10.dp))
             TextButton(onClick = {goToCreateAccountActivity(activity)}) {
@@ -78,12 +80,12 @@ fun UserLoginScreen(activity: UserLoginActivity) {
 }
 
 @Composable
-fun ComposePasswordTextField() {
+fun composePasswordTextField(textFieldLabel: String): String {
     var passwordInput = remember { TextFieldState() }
     var passwordHidden by rememberSaveable { mutableStateOf(true) }
     SecureTextField(
         state = passwordInput,
-        label = { Text("Enter your password") },
+        label = { Text(textFieldLabel) },
         textObfuscationMode =
             if (passwordHidden) TextObfuscationMode.RevealLastTyped
             else TextObfuscationMode.Visible,
@@ -96,13 +98,16 @@ fun ComposePasswordTextField() {
         },
         modifier = Modifier.padding(5.dp)
     )
+
+    return passwordInput.text.toString()
 }
 
-fun login(){
-
+private fun login(activity: UserLoginActivity) {
+    val intent = Intent(activity, FilmViewsActivity::class.java)
+    activity.startActivity(intent)
 }
 
-fun goToCreateAccountActivity(activity: UserLoginActivity) {
+private fun goToCreateAccountActivity(activity: UserLoginActivity) {
     val intent = Intent(activity, CreateAccountActivity::class.java)
     activity.startActivity(intent)
 }

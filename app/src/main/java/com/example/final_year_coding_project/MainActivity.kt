@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilmScreen(filmId: String, activity: MainActivity) {
+private fun FilmScreen(filmId: String, activity: MainActivity) {
     val database = Database()
 
     val filmLiveData = database.getFilmById(filmId).observeAsState(initial = Film())
@@ -61,10 +61,13 @@ fun FilmScreen(filmId: String, activity: MainActivity) {
     }
 
     val backgroundBrush = Brush.verticalGradient(listOf(Color.White, Color.DarkGray))
-    Column(modifier = Modifier
-        .background(backgroundBrush)
-        .fillMaxWidth()
-        .fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally,)
+    Column(
+        modifier = Modifier
+            .background(backgroundBrush)
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    )
     {
         TextButton(
             onClick = {
@@ -73,8 +76,10 @@ fun FilmScreen(filmId: String, activity: MainActivity) {
             },
             modifier = Modifier.align(alignment = Alignment.Start)
         ) {
-            Text(text = "< Back",
-                color = Color.Black)
+            Text(
+                text = "< Back",
+                color = Color.Black
+            )
         }
         ComposeFilmDetails(film)
         film = composeLikeAndDislikeButtons(film, database)

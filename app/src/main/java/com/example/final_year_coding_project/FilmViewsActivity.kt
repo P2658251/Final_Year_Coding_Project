@@ -45,7 +45,7 @@ class FilmViewsActivity : ComponentActivity() {
 }
 
 @Composable
-fun FilmViewsScreen(activity: FilmViewsActivity) {
+private fun FilmViewsScreen(activity: FilmViewsActivity) {
     val database = Database()
     val films = remember { mutableStateListOf<Film>() }
     var searchQuery by remember { mutableStateOf("") }
@@ -95,7 +95,7 @@ fun FilmViewsScreen(activity: FilmViewsActivity) {
 }
 
 @Composable
-fun FilmItem(film: Film, activity: FilmViewsActivity){
+private fun FilmItem(film: Film, activity: FilmViewsActivity){
     Card(modifier = Modifier
         .fillMaxWidth()
         .padding(6.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -123,7 +123,7 @@ fun FilmItem(film: Film, activity: FilmViewsActivity){
     }
 }
 
-fun goToFilmView(
+private fun goToFilmView(
     film: Film,
     activity: FilmViewsActivity
 ) {

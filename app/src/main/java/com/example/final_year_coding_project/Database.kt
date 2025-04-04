@@ -31,6 +31,10 @@ class Database {
          return liveData
     }
 
+    fun addUser(user: User){
+        database.collection("user").document(user.username).set(user)
+    }
+
     fun addLikeToFilmById(filmId: String){
         database.collection("film").document(filmId)
             .update("likes", FieldValue.increment(1))
