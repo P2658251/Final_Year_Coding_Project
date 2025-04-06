@@ -23,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -58,17 +59,19 @@ private fun UserLoginScreen(activity: UserLoginActivity) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
         ) {
-            Text(text = "Please Login to your account", modifier = Modifier.padding(5.dp), fontWeight = FontWeight.SemiBold)
+            Text(text = "Please Login to your account", modifier = Modifier.padding(top = 5.dp), fontWeight = FontWeight.SemiBold)
             var usernameInput by remember { mutableStateOf("") }
             TextField(
                 value = usernameInput,
                 onValueChange = { usernameInput = it },
                 label = { Text("Enter your username") },
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(top = 5.dp)
             )
             var passwordInput by remember { mutableStateOf("") }
             passwordInput = composePasswordTextField("Enter your password")
-            Button(onClick = {login(activity)}) {
+            val database = Database()
+            val user = database.getUserByKey(usernameInput).observeAsState(initial = User()).value
+            Button(onClick = {login(activity, passwordInput, user)}) {
                 Text(text = "Login", color = Color.White)
             }
             Text(text = "Don't have an account?", modifier = Modifier.padding(top = 10.dp))
@@ -81,10 +84,10 @@ private fun UserLoginScreen(activity: UserLoginActivity) {
 
 @Composable
 fun composePasswordTextField(textFieldLabel: String): String {
-    var passwordInput = remember { TextFieldState() }
+    var passwordTextFieldState = remember { TextFieldState() }
     var passwordHidden by rememberSaveable { mutableStateOf(true) }
     SecureTextField(
-        state = passwordInput,
+        state = passwordTextFieldState,
         label = { Text(textFieldLabel) },
         textObfuscationMode =
             if (passwordHidden) TextObfuscationMode.RevealLastTyped
@@ -99,12 +102,15 @@ fun composePasswordTextField(textFieldLabel: String): String {
         modifier = Modifier.padding(5.dp)
     )
 
-    return passwordInput.text.toString()
+    var passwordInput = passwordTextFieldState.text.toString()
+    return passwordInput
 }
 
-private fun login(activity: UserLoginActivity) {
-    val intent = Intent(activity, FilmViewsActivity::class.java)
-    activity.startActivity(intent)
+private fun login(activity: UserLoginActivity, passwordInput: String, user: User) {
+    if (passwordInput == user.getPassword()){
+        val intent = Intent(activity, FilmViewsActivity::class.java)
+        activity.startActivity(intent)
+    }
 }
 
 private fun goToCreateAccountActivity(activity: UserLoginActivity) {

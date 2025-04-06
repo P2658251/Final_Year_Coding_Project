@@ -32,7 +32,26 @@ class Database {
     }
 
     fun addUser(user: User){
-        database.collection("user").document(user.username).set(user)
+        database.collection("user").document(user.getUsername()).set(user)
+    }
+
+    fun getUserByKey(userKey: String): LiveData<User> {
+        val liveData = MutableLiveData<User>()
+        if(userKey.isNotEmpty()){
+            database.collection("user")
+                .document(userKey)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val userFromDatabase = document.toObject(User::class.java)
+                        liveData.value = userFromDatabase!!
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("Firestore", "Error getting documents: ", exception)
+                }
+        }
+        return liveData
     }
 
     fun addLikeToFilmById(filmId: String){
