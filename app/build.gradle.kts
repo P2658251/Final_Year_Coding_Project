@@ -70,6 +70,7 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
     implementation ("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material:material:1.8.0-rc01")
+    implementation ("org.mindrot:jbcrypt:0.4")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

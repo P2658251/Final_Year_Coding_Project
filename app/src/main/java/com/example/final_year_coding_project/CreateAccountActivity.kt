@@ -66,7 +66,8 @@ fun CreateAccountScreen(activity: CreateAccountActivity) {
 
 private fun attemptToAddUser(usernameInput: String, passwordInput: String, activity: CreateAccountActivity) {
     val database = Database()
-    database.addUser(User(usernameInput, passwordInput))
+    val hashedPassword = HashPassword.hash(passwordInput)
+    database.addUser(User(usernameInput, hashedPassword))
 
     goToLoginPage(activity)
 }
