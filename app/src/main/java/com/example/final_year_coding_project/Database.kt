@@ -11,11 +11,11 @@ class Database {
         FirebaseFirestore.getInstance()
     }
 
-    fun getFilmById(filmId: String): LiveData<Film> {
+    fun getFilmByKey(filmKey: String): LiveData<Film> {
          val liveData = MutableLiveData<Film>()
 
          database.collection("film")
-             .document(filmId)
+             .document(filmKey)
              .get()
              .addOnSuccessListener { document ->
                  if (document.exists()) {

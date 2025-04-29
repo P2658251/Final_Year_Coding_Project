@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
 private fun FilmScreen(filmId: String, username: String, activity: MainActivity) {
     val database = Database()
 
-    val filmLiveData = database.getFilmById(filmId).observeAsState(initial = Film())
+    val filmLiveData = database.getFilmByKey(filmId).observeAsState(initial = Film())
     // Create a MutableState to track changes manually
     var film by remember { mutableStateOf(filmLiveData.value) }
     // Observe changes from the database
