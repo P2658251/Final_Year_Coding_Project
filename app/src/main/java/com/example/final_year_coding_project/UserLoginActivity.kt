@@ -71,9 +71,15 @@ private fun UserLoginScreen(activity: UserLoginActivity) {
             passwordInput = composePasswordTextField("Enter your password")
             val database = Database()
             val user = database.getUserByKey(usernameInput).observeAsState(initial = User()).value
-            Button(onClick = {login(activity, passwordInput, user)}) {
+            var errorMessage by remember { mutableStateOf("") }
+            Button(onClick = {
+                if (!canLogin(activity, passwordInput, user)){
+                    errorMessage = "Username and Password do not match"
+                }
+            }) {
                 Text(text = "Login", color = Color.White)
             }
+            Text(text = errorMessage, color = Color.Red)
             Text(text = "Don't have an account?", modifier = Modifier.padding(top = 10.dp))
             TextButton(onClick = {goToCreateAccountActivity(activity)}) {
                 Text(text = "Create one", textDecoration = TextDecoration.Underline)
@@ -106,11 +112,13 @@ fun composePasswordTextField(textFieldLabel: String): String {
     return passwordInput
 }
 
-private fun login(activity: UserLoginActivity, passwordInput: String, user: User) {
-    if (HashPassword.checkPassword(passwordInput, user.getPassword())){
+private fun canLogin(activity: UserLoginActivity, passwordInput: String, user: User): Boolean {
+    if (user.getUsername() != "" && (HashPassword.checkPassword(passwordInput, user.getPassword()))){
         val intent = Intent(activity, FilmViewsActivity::class.java)
         activity.startActivity(intent)
     }
+
+    return false
 }
 
 private fun goToCreateAccountActivity(activity: UserLoginActivity) {
