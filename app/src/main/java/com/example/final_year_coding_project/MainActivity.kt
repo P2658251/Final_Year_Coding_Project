@@ -41,15 +41,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val filmId = intent.getStringExtra("film_id") ?: ""
+        val username = intent.getStringExtra("user_username") ?: ""
         setContent {
-            FilmScreen(filmId = filmId, this)
+            FilmScreen(filmId = filmId, username, this)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FilmScreen(filmId: String, activity: MainActivity) {
+private fun FilmScreen(filmId: String, username: String, activity: MainActivity) {
     val database = Database()
 
     val filmLiveData = database.getFilmById(filmId).observeAsState(initial = Film())
@@ -72,6 +73,7 @@ private fun FilmScreen(filmId: String, activity: MainActivity) {
         TextButton(
             onClick = {
                 val intent = Intent(activity, FilmViewsActivity::class.java)
+                intent.putExtra("user_username", username)
                 activity.startActivity(intent)
             },
             modifier = Modifier.align(alignment = Alignment.Start)
@@ -82,7 +84,7 @@ private fun FilmScreen(filmId: String, activity: MainActivity) {
             )
         }
         ComposeFilmDetails(film)
-        film = composeLikeAndDislikeButtons(film, database)
+        film = composeLikeAndDislikeButtons(film, username, database)
         ComposeRatingsRatioBar(film)
     }
 }
@@ -124,11 +126,15 @@ private fun ComposeFilmDetails(film: Film) {
 @Composable
 private fun composeLikeAndDislikeButtons(
     film: Film,
+    username: String,
     database: Database
 ): Film {
     var film1 = film
     var hasLiked by remember { mutableStateOf(false) }
+    hasLiked = film1.getLikedBy().contains(username)
     var hasDisliked by remember { mutableStateOf(false) }
+    hasDisliked = film1.getDislikedBy().contains(username)
+
     Row {
         Text(
             text = film1.getLikes().toString(),
@@ -146,21 +152,21 @@ private fun composeLikeAndDislikeButtons(
                 var newDislikes = film1.getDislikes()
 
                 if (hasLiked) {
-                    database.removeLikeFromFilmById(film1.getId())
+                    database.removeLikeFromFilmById(film1.getId(), username)
                     newLikes -= 1
 
                     hasLiked = false
                 } else if (hasDisliked) {
-                    database.addLikeToFilmById(film1.getId())
+                    database.addLikeToFilmById(film1.getId(), username)
                     newLikes += 1
 
-                    database.removeDislikeFromFilmById(film1.getId())
+                    database.removeDislikeFromFilmById(film1.getId(), username)
                     newDislikes -= 1
 
                     hasLiked = true
                     hasDisliked = false
                 } else {
-                    database.addLikeToFilmById(film1.getId())
+                    database.addLikeToFilmById(film1.getId(), username)
                     newLikes += 1
 
                     hasLiked = true
@@ -180,21 +186,21 @@ private fun composeLikeAndDislikeButtons(
                 var newDislikes = film1.getDislikes()
 
                 if (hasDisliked) {
-                    database.removeDislikeFromFilmById(film1.getId())
+                    database.removeDislikeFromFilmById(film1.getId(), username)
                     newDislikes -= 1
 
                     hasDisliked = false
                 } else if (hasLiked) {
-                    database.addDislikeToFilmById(film1.getId())
+                    database.addDislikeToFilmById(film1.getId(), username)
                     newDislikes += 1
 
-                    database.removeLikeFromFilmById(film1.getId())
+                    database.removeLikeFromFilmById(film1.getId(), username)
                     newLikes -= 1
 
                     hasDisliked = true
                     hasLiked = false
                 } else {
-                    database.addDislikeToFilmById(film1.getId())
+                    database.addDislikeToFilmById(film1.getId(), username)
                     newDislikes += 1
 
                     hasDisliked = true

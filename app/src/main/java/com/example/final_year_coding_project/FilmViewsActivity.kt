@@ -38,14 +38,16 @@ import coil3.compose.AsyncImage
 class FilmViewsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val username = intent.getStringExtra("user_username") ?: ""
+
         setContent {
-            FilmViewsScreen(this)
+            FilmViewsScreen(this, username)
         }
     }
 }
 
 @Composable
-private fun FilmViewsScreen(activity: FilmViewsActivity) {
+private fun FilmViewsScreen(activity: FilmViewsActivity, username: String) {
     val database = Database()
     val films = remember { mutableStateListOf<Film>() }
     var searchQuery by remember { mutableStateOf("") }
@@ -88,18 +90,18 @@ private fun FilmViewsScreen(activity: FilmViewsActivity) {
         }
         LazyColumn {
             items(filteredFilms) {film ->
-                FilmItem(film, activity)
+                FilmItem(film, username, activity)
             }
         }
     }
 }
 
 @Composable
-private fun FilmItem(film: Film, activity: FilmViewsActivity){
+private fun FilmItem(film: Film, username: String, activity: FilmViewsActivity){
     Card(modifier = Modifier
         .fillMaxWidth()
         .padding(6.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        onClick = { goToFilmView(film, activity) }) {
+        onClick = { goToFilmView(film, username, activity) }) {
         Row (modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically){
             AsyncImage(
                 model = film.getPosterImage(),
@@ -125,9 +127,11 @@ private fun FilmItem(film: Film, activity: FilmViewsActivity){
 
 private fun goToFilmView(
     film: Film,
+    username: String,
     activity: FilmViewsActivity
 ) {
     val intent = Intent(activity, MainActivity::class.java)
     intent.putExtra("film_id", film.getId())
+    intent.putExtra("user_username", username)
     activity.startActivity(intent)
 }

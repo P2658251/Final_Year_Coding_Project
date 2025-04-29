@@ -54,24 +54,36 @@ class Database {
         return liveData
     }
 
-    fun addLikeToFilmById(filmId: String){
+    fun addLikeToFilmById(filmId: String, username: String){
         database.collection("film").document(filmId)
             .update("likes", FieldValue.increment(1))
+
+        database.collection("film").document(filmId)
+            .update("likedBy", FieldValue.arrayUnion(username))
     }
 
-    fun removeLikeFromFilmById(filmId: String) {
+    fun removeLikeFromFilmById(filmId: String, username: String) {
         database.collection("film").document(filmId)
             .update("likes", FieldValue.increment(-1))
+
+        database.collection("film").document(filmId)
+            .update("likedBy", FieldValue.arrayRemove(username))
     }
 
-    fun addDislikeToFilmById(filmId: String){
+    fun addDislikeToFilmById(filmId: String, username: String){
         database.collection("film").document(filmId)
             .update("dislikes", FieldValue.increment(1))
+
+        database.collection("film").document(filmId)
+            .update("dislikedBy", FieldValue.arrayUnion(username))
     }
 
-    fun removeDislikeFromFilmById(filmId: String) {
+    fun removeDislikeFromFilmById(filmId: String, username: String) {
         database.collection("film").document(filmId)
             .update("dislikes", FieldValue.increment(-1))
+
+        database.collection("film").document(filmId)
+            .update("dislikedBy", FieldValue.arrayRemove(username))
     }
 
     fun getAllFilms(callback: (List<Film>) -> Unit) {

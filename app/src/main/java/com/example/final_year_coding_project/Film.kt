@@ -10,6 +10,8 @@ data class Film (
     private var likes: Int = 0,
     private val dislikes: Int = 0,
     private val description: String = "",
+    private val likedBy: List<String> = emptyList<String>(),
+    private val dislikedBy: List<String> = emptyList<String>()
 )
 {
     fun getId():String{
@@ -50,6 +52,14 @@ data class Film (
 
     fun getTagline(): String {
         return this.tagline
+    }
+
+    fun getLikedBy(): List<String> {
+        return this.likedBy
+    }
+
+    fun getDislikedBy(): List<String> {
+        return this.dislikedBy
     }
 
     fun calculateLikesToDislikesRatio(): Float {

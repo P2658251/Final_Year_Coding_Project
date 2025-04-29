@@ -115,7 +115,9 @@ fun composePasswordTextField(textFieldLabel: String): String {
 private fun canLogin(activity: UserLoginActivity, passwordInput: String, user: User): Boolean {
     if (user.getUsername() != "" && (HashPassword.checkPassword(passwordInput, user.getPassword()))){
         val intent = Intent(activity, FilmViewsActivity::class.java)
+        intent.putExtra("user_username", user.getUsername())
         activity.startActivity(intent)
+        return true
     }
 
     return false
