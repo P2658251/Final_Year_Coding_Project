@@ -97,7 +97,7 @@ class Database {
                 callback(films)
             }
             .addOnFailureListener { exception ->
-                Log.e("FirestoreError", "Error getting films", exception)
+                Log.e("Firestore Error", "Error getting films", exception)
                 callback(emptyList()) // Return empty list on failure
             }
     }
