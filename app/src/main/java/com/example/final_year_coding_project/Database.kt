@@ -102,6 +102,10 @@ class Database {
             }
     }
 
+    fun addReview(filmKey: String, review: Review) {
+        database.collection("film").document(filmKey).collection("reviews").document().set(review)
+    }
+
 //    fun addFilmToDatabase() {
 //        val film = Film(
 //            name = "Anora",

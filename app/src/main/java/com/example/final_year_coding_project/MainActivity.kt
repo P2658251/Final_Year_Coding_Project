@@ -5,25 +5,30 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 
 class MainActivity : ComponentActivity() {
@@ -86,6 +92,51 @@ private fun FilmScreen(filmId: String, username: String, activity: MainActivity)
         ComposeFilmDetails(film)
         film = composeLikeAndDislikeButtons(film, username, database)
         ComposeRatingsRatioBar(film)
+        var isUserLeavingReview by remember { mutableStateOf(false) }
+        Button(onClick = {isUserLeavingReview = true}, modifier = Modifier.fillMaxWidth().padding(start = 5.dp, end = 5.dp)){
+            Text(text = "Leave a review", color = Color.White)
+        }
+        if (isUserLeavingReview) {
+            Dialog(onDismissRequest = { isUserLeavingReview = false }) {
+                var reviewInput by rememberSaveable { mutableStateOf("") }
+                Card(
+                    modifier = Modifier
+                    .fillMaxWidth()
+                    .height(375.dp)
+                    .padding(16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    ) {
+                    TextField(
+                        value = reviewInput,
+                        onValueChange = { reviewInput = it },
+                        label = { Text("Leave a review") },
+                        modifier = Modifier.height(275.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(alignment = Alignment.End),
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        TextButton(
+                            onClick = { isUserLeavingReview = false },
+                            modifier = Modifier.padding(8.dp),
+                        ) {
+                            Text("Cancel")
+                        }
+                        TextButton(
+                            onClick = {
+                                database.addReview(film.getId(), Review(username = username, reviewBody = reviewInput))
+                                isUserLeavingReview = false
+                                      },
+                            modifier = Modifier.padding(8.dp),
+                        ) {
+                            Text("Save")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
