@@ -1,10 +1,13 @@
 package com.example.final_year_coding_project
 
+import java.time.temporal.ChronoUnit
+import java.time.temporal.Temporal
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
-class Review(
+data class Review(
     private val username: String = "",
-    private val reviewBody: String = "",
+    private val body: String = "",
     private val date: Date = Date()
 )
 {
@@ -12,11 +15,31 @@ class Review(
         return this.username
     }
 
-    fun getReviewBody(): String {
-        return this.reviewBody
+    fun getBody(): String {
+        return this.body
     }
 
-    fun getReviewDate(): Date {
+    fun getDate(): Date {
         return this.date
+    }
+
+    fun calculateTimeFromReview(): String {
+        val now = Date()
+        val diffInMillis = now.time - date.time
+
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis)
+        val hours = TimeUnit.MILLISECONDS.toHours(diffInMillis)
+        val days = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+        val weeks = days / 7
+        val years = weeks / 52
+
+        return when {
+            minutes < 1 -> "Just now"
+            minutes < 60 -> "${minutes}m"
+            hours < 24 -> "${hours}h"
+            days < 7 -> "${days}d"
+            weeks < 52 -> "${weeks}w"
+            else -> "${years}y"
+        }
     }
 }

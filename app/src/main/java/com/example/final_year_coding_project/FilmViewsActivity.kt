@@ -130,8 +130,8 @@ private fun goToFilmView(
     username: String,
     activity: FilmViewsActivity
 ) {
-    val intent = Intent(activity, MainActivity::class.java)
-    intent.putExtra("film_id", film.getId())
+    val intent = Intent(activity, FilmViewActivity::class.java)
+    intent.putExtra("film_key", film.getKey())
     intent.putExtra("user_username", username)
     activity.startActivity(intent)
 }

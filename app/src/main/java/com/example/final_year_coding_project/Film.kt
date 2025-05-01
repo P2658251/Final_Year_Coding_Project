@@ -1,7 +1,7 @@
 package com.example.final_year_coding_project
 
 data class Film (
-    private var id: String = "",
+    private var key: String = "",
     private val name: String = "",
     private val tagline: String = "",
     private val releaseDate: String = "",
@@ -14,12 +14,12 @@ data class Film (
     private val dislikedBy: List<String> = emptyList<String>()
 )
 {
-    fun getId():String{
-        return this.id
+    fun getKey():String{
+        return this.key
     }
 
-    fun setId(filmId: String){
-        id = filmId
+    fun setKey(filmKey: String){
+        key = filmKey
     }
 
      fun getName(): String {

@@ -8,11 +8,11 @@ class GivenAFilmObject {
 
     @Test
     fun whenSetIdIsCalledWithAParameter_ThenTheIdGetsCorrectlySet(){
-        var film = Film(id = "wrong id")
+        var film = Film(key = "wrong id")
 
-        film.setId("correct id")
+        film.setKey("correct id")
 
-        assertEquals("correct id", film.getId())
+        assertEquals("correct id", film.getKey())
     }
 
     @Test
@@ -37,10 +37,10 @@ class GivenAFilmObject {
     }
 
     @Test
-    fun whenGetIdIsCalled_ThenIdIsReturnedCorrectly(){
-        var film = Film(id = "Test Id")
+    fun whenGetIdIsCalled_ThenKeyIsReturnedCorrectly(){
+        var film = Film(key = "Test Id")
 
-        assertEquals("Test Id", film.getId())
+        assertEquals("Test Id", film.getKey())
     }
 
     @Test

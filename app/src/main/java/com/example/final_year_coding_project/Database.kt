@@ -20,7 +20,7 @@ class Database {
              .addOnSuccessListener { document ->
                  if (document.exists()) {
                      val filmFromDatabase = document.toObject(Film::class.java)
-                     filmFromDatabase?.setId(document.id)
+                     filmFromDatabase?.setKey(document.id)
                      liveData.value = filmFromDatabase!!
                  }
              }
@@ -92,7 +92,7 @@ class Database {
             .addOnSuccessListener { result ->
                 val films = result.documents.mapNotNull { document ->
                     val film = document.toObject(Film::class.java)
-                    film?.copy(id = document.id)
+                    film?.copy(key = document.id)
                 }
                 callback(films)
             }
@@ -103,7 +103,23 @@ class Database {
     }
 
     fun addReview(filmKey: String, review: Review) {
-        database.collection("film").document(filmKey).collection("reviews").document().set(review)
+        database.collection("film").document(filmKey).collection("review").document().set(review)
+    }
+
+    fun getReviewsByFilmKey(filmKey: String, callback: (List<Review>) -> Unit) {
+        database.collection("film").document(filmKey)
+            .collection("review")
+            .get()
+            .addOnSuccessListener { result ->
+                val reviews = result.documents.mapNotNull { document ->
+                    document.toObject(Review::class.java)
+                }
+                callback(reviews)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore Error", "Error getting reviews", exception)
+                callback(emptyList())
+            }
     }
 
 //    fun addFilmToDatabase() {

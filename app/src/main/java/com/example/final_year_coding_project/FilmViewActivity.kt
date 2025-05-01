@@ -42,21 +42,21 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 
-class MainActivity : ComponentActivity() {
+class FilmViewActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val filmId = intent.getStringExtra("film_id") ?: ""
+        val filmKey = intent.getStringExtra("film_key") ?: ""
         val username = intent.getStringExtra("user_username") ?: ""
         setContent {
-            FilmScreen(filmId = filmId, username, this)
+            FilmScreen(filmId = filmKey, username, this)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FilmScreen(filmId: String, username: String, activity: MainActivity) {
+private fun FilmScreen(filmId: String, username: String, currentActivity: FilmViewActivity) {
     val database = Database()
 
     val filmLiveData = database.getFilmByKey(filmId).observeAsState(initial = Film())
@@ -78,9 +78,9 @@ private fun FilmScreen(filmId: String, username: String, activity: MainActivity)
     {
         TextButton(
             onClick = {
-                val intent = Intent(activity, FilmViewsActivity::class.java)
+                val intent = Intent(currentActivity, FilmViewsActivity::class.java)
                 intent.putExtra("user_username", username)
-                activity.startActivity(intent)
+                currentActivity.startActivity(intent)
             },
             modifier = Modifier.align(alignment = Alignment.Start)
         ) {
@@ -92,52 +92,87 @@ private fun FilmScreen(filmId: String, username: String, activity: MainActivity)
         ComposeFilmDetails(film)
         film = composeLikeAndDislikeButtons(film, username, database)
         ComposeRatingsRatioBar(film)
-        var isUserLeavingReview by remember { mutableStateOf(false) }
-        Button(onClick = {isUserLeavingReview = true}, modifier = Modifier.fillMaxWidth().padding(start = 5.dp, end = 5.dp)){
-            Text(text = "Leave a review", color = Color.White)
-        }
-        if (isUserLeavingReview) {
-            Dialog(onDismissRequest = { isUserLeavingReview = false }) {
-                var reviewInput by rememberSaveable { mutableStateOf("") }
-                Card(
-                    modifier = Modifier
+        ComposeReviewSection(database, film, username, currentActivity)
+    }
+}
+
+@Composable
+private fun ComposeReviewSection(
+    database: Database,
+    film: Film,
+    username: String,
+    currentActivity: FilmViewActivity
+) {
+    var isUserLeavingReview by remember { mutableStateOf(false) }
+    Button(
+        onClick = { isUserLeavingReview = true },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 5.dp, end = 5.dp)
+    ) {
+        Text(text = "Leave a review", color = Color.White)
+    }
+    if (isUserLeavingReview) {
+        Dialog(onDismissRequest = { isUserLeavingReview = false }) {
+            var reviewInput by rememberSaveable { mutableStateOf("") }
+            Card(
+                modifier = Modifier
                     .fillMaxWidth()
                     .height(375.dp)
                     .padding(16.dp),
-                    shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                TextField(
+                    value = reviewInput,
+                    onValueChange = { reviewInput = it },
+                    label = { Text("Leave a review") },
+                    modifier = Modifier.height(275.dp)
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(alignment = Alignment.End),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    TextButton(
+                        onClick = { isUserLeavingReview = false },
+                        modifier = Modifier.padding(8.dp),
                     ) {
-                    TextField(
-                        value = reviewInput,
-                        onValueChange = { reviewInput = it },
-                        label = { Text("Leave a review") },
-                        modifier = Modifier.height(275.dp)
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(alignment = Alignment.End),
-                        horizontalArrangement = Arrangement.Center,
+                        Text("Cancel")
+                    }
+                    TextButton(
+                        onClick = {
+                            database.addReview(
+                                film.getKey(),
+                                Review(username = username, body = reviewInput)
+                            )
+                            isUserLeavingReview = false
+                        },
+                        modifier = Modifier.padding(8.dp),
                     ) {
-                        TextButton(
-                            onClick = { isUserLeavingReview = false },
-                            modifier = Modifier.padding(8.dp),
-                        ) {
-                            Text("Cancel")
-                        }
-                        TextButton(
-                            onClick = {
-                                database.addReview(film.getId(), Review(username = username, reviewBody = reviewInput))
-                                isUserLeavingReview = false
-                                      },
-                            modifier = Modifier.padding(8.dp),
-                        ) {
-                            Text("Save")
-                        }
+                        Text("Save")
                     }
                 }
             }
         }
     }
+    Button(
+        onClick = { goToReviewsViewsActivity(film.getKey(), currentActivity)},
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 5.dp, end = 5.dp)
+    ) {
+        Text(text = "View Reviews", color = Color.White)
+    }
+}
+
+fun goToReviewsViewsActivity(
+    filmKey: String,
+    currentActivity: FilmViewActivity
+) {
+    val intent = Intent(currentActivity, ReviewsViewsActivity::class.java)
+    intent.putExtra("film_key", filmKey)
+    currentActivity.startActivity(intent)
 }
 
 @Composable
@@ -203,21 +238,21 @@ private fun composeLikeAndDislikeButtons(
                 var newDislikes = film1.getDislikes()
 
                 if (hasLiked) {
-                    database.removeLikeFromFilmById(film1.getId(), username)
+                    database.removeLikeFromFilmById(film1.getKey(), username)
                     newLikes -= 1
 
                     hasLiked = false
                 } else if (hasDisliked) {
-                    database.addLikeToFilmById(film1.getId(), username)
+                    database.addLikeToFilmById(film1.getKey(), username)
                     newLikes += 1
 
-                    database.removeDislikeFromFilmById(film1.getId(), username)
+                    database.removeDislikeFromFilmById(film1.getKey(), username)
                     newDislikes -= 1
 
                     hasLiked = true
                     hasDisliked = false
                 } else {
-                    database.addLikeToFilmById(film1.getId(), username)
+                    database.addLikeToFilmById(film1.getKey(), username)
                     newLikes += 1
 
                     hasLiked = true
@@ -237,21 +272,21 @@ private fun composeLikeAndDislikeButtons(
                 var newDislikes = film1.getDislikes()
 
                 if (hasDisliked) {
-                    database.removeDislikeFromFilmById(film1.getId(), username)
+                    database.removeDislikeFromFilmById(film1.getKey(), username)
                     newDislikes -= 1
 
                     hasDisliked = false
                 } else if (hasLiked) {
-                    database.addDislikeToFilmById(film1.getId(), username)
+                    database.addDislikeToFilmById(film1.getKey(), username)
                     newDislikes += 1
 
-                    database.removeLikeFromFilmById(film1.getId(), username)
+                    database.removeLikeFromFilmById(film1.getKey(), username)
                     newLikes -= 1
 
                     hasDisliked = true
                     hasLiked = false
                 } else {
-                    database.addDislikeToFilmById(film1.getId(), username)
+                    database.addDislikeToFilmById(film1.getKey(), username)
                     newDislikes += 1
 
                     hasDisliked = true

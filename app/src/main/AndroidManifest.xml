@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Final_Year_Coding_Project"
         tools:targetApi="31">
         <activity
+            android:name=".ReviewsViewsActivity"
+            android:exported="false" />
+        <activity
             android:name=".CreateAccountActivity"
             android:exported="false" />
         <activity
@@ -26,9 +29,9 @@
         </activity>
         <activity
             android:name=".FilmViewsActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
-            android:name=".MainActivity"
+            android:name=".FilmViewActivity"
             android:exported="true">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
