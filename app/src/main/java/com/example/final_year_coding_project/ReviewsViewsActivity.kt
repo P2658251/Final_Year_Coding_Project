@@ -64,14 +64,14 @@ class ReviewsViewsActivity : ComponentActivity() {
                         Text(
                             text = review.getUsername(),
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start
+                            fontWeight = FontWeight.SemiBold
                         )
                         Text(
                             text = review.calculateTimeFromReview(),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.End
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.weight(1f)
                         )
                     }
                     Text(
