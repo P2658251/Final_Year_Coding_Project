@@ -96,76 +96,6 @@ private fun FilmScreen(filmId: String, username: String, currentActivity: FilmVi
     }
 }
 
-@Composable
-private fun ComposeReviewSection(
-    database: Database,
-    film: Film,
-    username: String,
-    currentActivity: FilmViewActivity
-) {
-    var isUserLeavingReview by remember { mutableStateOf(false) }
-    Button(
-        onClick = { isUserLeavingReview = true },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 5.dp, end = 5.dp)
-    ) {
-        Text(text = "Leave a review", color = Color.White)
-    }
-    if (isUserLeavingReview) {
-        Dialog(onDismissRequest = { isUserLeavingReview = false }) {
-            var reviewInput by rememberSaveable { mutableStateOf("") }
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(375.dp)
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                TextField(
-                    value = reviewInput,
-                    onValueChange = { reviewInput = it },
-                    label = { Text("Leave a review") },
-                    modifier = Modifier.height(275.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(alignment = Alignment.End),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    TextButton(
-                        onClick = { isUserLeavingReview = false },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("Cancel")
-                    }
-                    TextButton(
-                        onClick = {
-                            database.addReview(
-                                film.getKey(),
-                                Review(username = username, body = reviewInput)
-                            )
-                            isUserLeavingReview = false
-                        },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("Save")
-                    }
-                }
-            }
-        }
-    }
-    Button(
-        onClick = { goToReviewsViewsActivity(film.getKey(), currentActivity)},
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 5.dp, end = 5.dp)
-    ) {
-        Text(text = "View Reviews", color = Color.White)
-    }
-}
-
 fun goToReviewsViewsActivity(
     filmKey: String,
     currentActivity: FilmViewActivity
@@ -324,4 +254,74 @@ private fun ComposeRatingsRatioBar(film: Film) {
         color = colourOfRatingBar,
         trackColor = trackColourOfRatingBar,
     )
+}
+
+@Composable
+private fun ComposeReviewSection(
+    database: Database,
+    film: Film,
+    username: String,
+    currentActivity: FilmViewActivity
+) {
+    var isUserLeavingReview by remember { mutableStateOf(false) }
+    Button(
+        onClick = { isUserLeavingReview = true },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 5.dp, end = 5.dp)
+    ) {
+        Text(text = "Leave a review", color = Color.White)
+    }
+    if (isUserLeavingReview) {
+        Dialog(onDismissRequest = { isUserLeavingReview = false }) {
+            var reviewInput by rememberSaveable { mutableStateOf("") }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(375.dp)
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                TextField(
+                    value = reviewInput,
+                    onValueChange = { reviewInput = it },
+                    label = { Text("Leave a review") },
+                    modifier = Modifier.height(275.dp)
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(alignment = Alignment.End),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    TextButton(
+                        onClick = { isUserLeavingReview = false },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Cancel")
+                    }
+                    TextButton(
+                        onClick = {
+                            database.addReview(
+                                film.getKey(),
+                                Review(username = username, body = reviewInput)
+                            )
+                            isUserLeavingReview = false
+                        },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Save")
+                    }
+                }
+            }
+        }
+    }
+    Button(
+        onClick = { goToReviewsViewsActivity(film.getKey(), currentActivity)},
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 5.dp, end = 5.dp)
+    ) {
+        Text(text = "View Reviews", color = Color.White)
+    }
 }
