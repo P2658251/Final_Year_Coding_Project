@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -54,9 +55,18 @@ fun CreateAccountScreen(activity: CreateAccountActivity) {
         )
         var passwordInput by remember { mutableStateOf("") }
         passwordInput = composePasswordTextField("Please enter a password")
-        Button(onClick = { attemptToAddUser(usernameInput, passwordInput, activity) }, modifier = Modifier.padding(top = 10.dp)) {
+        var errorMessage by remember { mutableStateOf("") }
+        Button(onClick = {
+            var usernameValidationResponse = Validate.username(usernameInput)
+            if(usernameValidationResponse.getIsValidated()){
+                attemptToAddUser(usernameInput, passwordInput, activity)
+            }else{
+                errorMessage = usernameValidationResponse.getErrorMessage()
+            } },
+            modifier = Modifier.padding(top = 10.dp)) {
             Text(text = "Create Account", color = Color.White)
         }
+        Text(text = errorMessage, color = Color.Red, textAlign = TextAlign.Center)
         Text(text = "Already have an account?", modifier = Modifier.padding(top = 10.dp))
         TextButton(onClick = { goToLoginPage(activity) }) {
             Text(text = "Log in", textDecoration = TextDecoration.Underline)
