@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Final_Year_Coding_Project"
         tools:targetApi="31">
         <activity
+            android:name=".UserProfileView"
+            android:exported="false" />
+        <activity
             android:name=".ReviewsViewsActivity"
             android:exported="false" />
         <activity

@@ -7,7 +7,6 @@ class GivenAPlainTextPassword {
     @Test
     fun whenThePasswordIsHashed_ThenTheHashedPasswordIsDifferentToThePlainTextOne(){
         val testPassword = "test password"
-
         assertNotEquals(testPassword, HashPassword.hash(testPassword))
     }
 
@@ -15,7 +14,6 @@ class GivenAPlainTextPassword {
     fun whenThePasswordIsHashed_ThenTheHashedPasswordIsDifferentToTheHashOfADifferentPassword(){
         val testPassword = "test password"
         val differentPassword = "different password"
-
         assertNotEquals(HashPassword.hash(differentPassword), HashPassword.hash(testPassword))
     }
 
@@ -23,7 +21,6 @@ class GivenAPlainTextPassword {
     fun whenThePasswordIsComparedToTheHashedOne_ThenTrueIsReturned(){
         val testPassword = "test password"
         val hashedPassword = HashPassword.hash(testPassword)
-
         assertTrue(HashPassword.checkPassword(testPassword, hashedPassword))
     }
 
@@ -31,7 +28,6 @@ class GivenAPlainTextPassword {
     fun whenThePasswordIsComparedToADifferentHashedOne_ThenFalseIsReturned(){
         val testPassword = "test password"
         val hashedPassword = HashPassword.hash("different password")
-
         assertFalse(HashPassword.checkPassword(testPassword, hashedPassword))
     }
 

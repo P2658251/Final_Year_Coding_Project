@@ -9,37 +9,31 @@ class GivenAFilmObject {
     @Test
     fun whenSetIdIsCalledWithAParameter_ThenTheIdGetsCorrectlySet(){
         var film = Film(key = "wrong id")
-
         film.setKey("correct id")
-
         assertEquals("correct id", film.getKey())
     }
 
     @Test
     fun whenGetNameIsCalled_ThenNameIsReturnedCorrectly() {
         var film = Film(name = "Test film")
-
         assertEquals(film.getName(), "Test film")
     }
 
     @Test
     fun whenGetReleaseDateIsCalled_ThenReleaseDateIsReturnedCorrectly() {
         var film = Film(releaseDate = "2020")
-
         assertEquals(film.getReleaseDate(), "2020")
     }
 
     @Test
     fun whenGetDirectorIsCalled_ThenDirectorIsReturnedCorrectly() {
         var film = Film(director = "Test Director")
-
         assertEquals(film.getDirector(), "Test Director")
     }
 
     @Test
     fun whenGetIdIsCalled_ThenKeyIsReturnedCorrectly(){
         var film = Film(key = "Test Id")
-
         assertEquals("Test Id", film.getKey())
     }
 
@@ -47,7 +41,6 @@ class GivenAFilmObject {
     fun whenGetLikesIsCalled_ThenLikesAreReturnedCorrectly(){
         var randomTestInteger = Random.nextInt(0, 100)
         var film = Film(likes = randomTestInteger)
-
         assertEquals(randomTestInteger, film.getLikes())
     }
 
@@ -55,49 +48,42 @@ class GivenAFilmObject {
     fun whenGetDislikesIsCalled_ThenDislikesAreReturnedCorrectly(){
         var randomTestInteger = Random.nextInt(0, 100)
         var film = Film(dislikes = randomTestInteger)
-
         assertEquals(randomTestInteger, film.getDislikes())
     }
 
     @Test
     fun whenGetDescriptionIsCalled_ThenDescriptionIsReturnedCorrectly(){
         var film = Film(description = "Test Description")
-
         assertEquals("Test Description", film.getDescription())
     }
 
     @Test
     fun whenGetPosterIsCalled_ThenPosterIsReturnedCorrectly() {
         var film = Film(posterImage = "Test Poster")
-
         assertEquals(film.getPosterImage(), "Test Poster")
     }
 
     @Test
     fun whenCalculateLikesToDislikesRatioIsCalled_AndTheFilmOnlyHasLikesAndNoDislikes_Then1IsReturnedCorrectly() {
         var film = Film(likes = 100, dislikes = 0)
-
         assertEquals(film.calculateLikesToDislikesRatio(), 1f)
     }
 
     @Test
     fun whenCalculateLikesToDislikesRatioIsCalled_AndTheFilmOnlyHasDislikesAndNoLikes_Then0IsReturnedCorrectly() {
         var film = Film(likes = 0, dislikes = 100)
-
         assertEquals(film.calculateLikesToDislikesRatio(), 0f)
     }
 
     @Test
     fun whenCalculateLikesToDislikesRatioIsCalled_AndTheFilmHasNoDislikesAndNoLikes_ThenHalfIsReturnedCorrectly() {
         var film = Film(likes = 0, dislikes = 0)
-
         assertEquals(film.calculateLikesToDislikesRatio(), 0.5f)
     }
 
     @Test
     fun whenCalculateLikesToDislikesRatioIsCalled_AndTheFilmHasEqualDislikesAndLikes_ThenHalfIsReturnedCorrectly() {
         var film = Film(likes = 50, dislikes = 50)
-
         assertEquals(film.calculateLikesToDislikesRatio(), 0.5f)
     }
 

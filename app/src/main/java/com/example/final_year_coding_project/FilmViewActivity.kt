@@ -2,9 +2,11 @@ package com.example.final_year_coding_project
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,11 +19,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,6 +46,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class FilmViewActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,9 +68,7 @@ private fun FilmScreen(filmId: String, username: String, currentActivity: FilmVi
     val database = Database()
 
     val filmLiveData = database.getFilmByKey(filmId).observeAsState(initial = Film())
-    // Create a MutableState to track changes manually
     var film by remember { mutableStateOf(filmLiveData.value) }
-    // Observe changes from the database
     LaunchedEffect(filmLiveData.value) {
         film = filmLiveData.value
     }
@@ -188,7 +194,7 @@ private fun composeLikeAndDislikeButtons(
                     hasLiked = true
                 }
 
-                film1 = film1.copy(likes = newLikes, dislikes = newDislikes) // Single state update
+                film1 = film1.copy(likes = newLikes, dislikes = newDislikes)
             }, colors = ButtonDefaults.buttonColors(containerColor = colourOfLikeButton),
             modifier = Modifier.offset((-50).dp)
         ) {
@@ -264,6 +270,7 @@ private fun ComposeReviewSection(
     currentActivity: FilmViewActivity
 ) {
     var isUserLeavingReview by remember { mutableStateOf(false) }
+    var isUserSettingDateWatched by remember { mutableStateOf(false) }
     Button(
         onClick = { isUserLeavingReview = true },
         modifier = Modifier
@@ -275,6 +282,7 @@ private fun ComposeReviewSection(
     if (isUserLeavingReview) {
         Dialog(onDismissRequest = { isUserLeavingReview = false }) {
             var reviewInput by rememberSaveable { mutableStateOf("") }
+            var dateWatched by remember { mutableStateOf<Long?>(System.currentTimeMillis()) }
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -282,6 +290,29 @@ private fun ComposeReviewSection(
                     .padding(16.dp),
                 shape = RoundedCornerShape(16.dp),
             ) {
+                Row( modifier = Modifier
+                    .fillMaxWidth()
+                    .align(alignment = Alignment.Start)
+                    .clickable(onClick = {isUserSettingDateWatched = true})
+                    .padding(5.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    ){
+                    var date = Date()
+                    if (dateWatched != null) {
+                        date = Date(dateWatched!!)
+                    }
+                    val formattedDate = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(date)
+                    Text("Date watched: $formattedDate")
+                    if (isUserSettingDateWatched){
+                        DatePickerModal(
+                            onDateSelected = {
+                                dateWatched = it
+                                isUserSettingDateWatched = false
+                            },
+                            onDismiss = { isUserSettingDateWatched = false }
+                        )
+                    }
+                }
                 TextField(
                     value = reviewInput,
                     onValueChange = { reviewInput = it },
@@ -306,6 +337,7 @@ private fun ComposeReviewSection(
                                 film.getKey(),
                                 Review(username = username, body = reviewInput)
                             )
+                            database.addFilmWatchedByUser(username = username, filmKey = film.getKey(), filmWatchedByUser = FilmWatchedByUser(film.getName(), Date(dateWatched!!)))
                             isUserLeavingReview = false
                         },
                         modifier = Modifier.padding(8.dp),
@@ -323,5 +355,33 @@ private fun ComposeReviewSection(
             .padding(start = 5.dp, end = 5.dp)
     ) {
         Text(text = "View Reviews", color = Color.White)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerModal(
+    onDateSelected: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                onDateSelected(datePickerState.selectedDateMillis)
+                onDismiss()
+            }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+    ) {
+        DatePicker(state = datePickerState)
     }
 }

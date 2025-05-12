@@ -122,15 +122,7 @@ class Database {
             }
     }
 
-//    fun addFilmToDatabase() {
-//        val film = Film(
-//            name = "Anora",
-//            releaseDate = "2024",
-//            director = "Sean Baker",
-//            posterImage = "https://image.tmdb.org/t/p/w500/7MrgIUeq0DD2iF7GR6wqJfYZNeC.jpg",
-//            description = "A young sex worker from Brooklyn gets her chance at a Cinderella story when she meets and impulsively marries the son of an oligarch. Once the news reaches Russia, her fairytale is threatened as his parents set out to get the marriage annulled.",
-//            tagline = "Love is a hustle."
-//        )
-//        database.collection("film").document().set(film)
-//    }
+    fun addFilmWatchedByUser(username: String, filmKey: String, filmWatchedByUser: FilmWatchedByUser){
+        database.collection("user").document(username).collection("filmWatched").document(filmKey).set(filmWatchedByUser)
+    }
 }
