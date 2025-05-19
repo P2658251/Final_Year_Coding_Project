@@ -2,7 +2,6 @@ package com.example.final_year_coding_project
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -84,7 +83,7 @@ private fun FilmScreen(filmId: String, username: String, currentActivity: FilmVi
     {
         TextButton(
             onClick = {
-                val intent = Intent(currentActivity, FilmViewsActivity::class.java)
+                val intent = Intent(currentActivity, FilmsViewsActivity::class.java)
                 intent.putExtra("user_username", username)
                 currentActivity.startActivity(intent)
             },
