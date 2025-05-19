@@ -35,27 +35,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 
-class FilmViewsActivity : ComponentActivity() {
+class FilmsViewsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val username = intent.getStringExtra("user_username") ?: ""
 
         setContent {
-            FilmViewsScreen(this, username)
+            FilmsViewsScreen(this, username)
         }
     }
 }
 
 @Composable
-private fun FilmViewsScreen(activity: FilmViewsActivity, username: String) {
+private fun FilmsViewsScreen(activity: FilmsViewsActivity, username: String) {
     val database = Database()
     val films = remember { mutableStateListOf<Film>() }
     var searchQuery by remember { mutableStateOf("") }
     val filteredFilms = films.filter { film ->
-        film.getName().contains(searchQuery, ignoreCase = true)
+        film.getName().contains(searchQuery, ignoreCase = true) or film.getDirector().contains(searchQuery, ignoreCase = true)
     }
 
-    // Fetch films from the database
     LaunchedEffect(Unit) {
         database.getAllFilms { fetchedFilms ->
             films.clear()
@@ -97,7 +96,7 @@ private fun FilmViewsScreen(activity: FilmViewsActivity, username: String) {
 }
 
 @Composable
-private fun FilmItem(film: Film, username: String, activity: FilmViewsActivity){
+private fun FilmItem(film: Film, username: String, activity: FilmsViewsActivity){
     Card(modifier = Modifier
         .fillMaxWidth()
         .padding(6.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -128,7 +127,7 @@ private fun FilmItem(film: Film, username: String, activity: FilmViewsActivity){
 private fun goToFilmView(
     film: Film,
     username: String,
-    activity: FilmViewsActivity
+    activity: FilmsViewsActivity
 ) {
     val intent = Intent(activity, FilmViewActivity::class.java)
     intent.putExtra("film_key", film.getKey())
