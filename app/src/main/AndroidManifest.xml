@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FilmViewsActivity"
+            android:name=".FilmsViewsActivity"
             android:exported="true" />
         <activity
             android:name=".FilmViewActivity"
