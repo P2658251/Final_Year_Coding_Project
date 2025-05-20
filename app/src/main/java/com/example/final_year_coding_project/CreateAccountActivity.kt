@@ -58,10 +58,11 @@ fun CreateAccountScreen(activity: CreateAccountActivity) {
         var errorMessage by remember { mutableStateOf("") }
         Button(onClick = {
             var usernameValidationResponse = Validate.username(usernameInput)
-            if(usernameValidationResponse.getIsValidated()){
+            var passwordValidationResponse = Validate.password(passwordInput)
+            if(usernameValidationResponse.getIsValidated() && passwordValidationResponse.getIsValidated()){
                 attemptToAddUser(usernameInput, passwordInput, activity)
             }else{
-                errorMessage = usernameValidationResponse.getErrorMessage()
+                errorMessage = "${usernameValidationResponse.getErrorMessage()}\n ${passwordValidationResponse.getErrorMessage()}"
             } },
             modifier = Modifier.padding(top = 10.dp)) {
             Text(text = "Create Account", color = Color.White)
