@@ -1,23 +1,23 @@
 package com.example.final_year_coding_project
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
@@ -33,15 +33,17 @@ import androidx.compose.ui.unit.sp
 class ReviewsViewsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val filmKey = intent.getStringExtra("film_key") ?: ""
+        val username = intent.getStringExtra("user_username") ?: ""
 
         setContent {
-            ReviewsScreen(filmKey)
+            ReviewsScreen(filmKey, username, this)
         }
     }
 
     @Composable
-    private fun ReviewsScreen(filmKey: String) {
+    private fun ReviewsScreen(filmKey: String, username: String, currentActivity: ReviewsViewsActivity) {
         val database = Database()
         val reviews = remember { mutableStateListOf<Review>() }
 
@@ -59,17 +61,41 @@ class ReviewsViewsActivity : ComponentActivity() {
             Row(
                 modifier = Modifier
                     .background(Color.DarkGray)
-                    .fillMaxWidth(), horizontalArrangement = Arrangement.Center
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                // Back Button on the left
+                TextButton(
+                    onClick = {
+                        val intent = Intent(currentActivity, FilmViewActivity::class.java)
+                        intent.putExtra("user_username", username)
+                        intent.putExtra("film_key", filmKey)
+                        currentActivity.startActivity(intent)
+                    },
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(
+                        text = "< Back",
+                        color = Color.Black
+                    )
+                }
+
+                // Centered Title
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(
                         text = "Reviews",
-                        modifier = Modifier.padding(top = 20.dp),
                         color = Color.White,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 30.sp
                     )
                 }
+
+                // Spacer to balance the layout visually
+                Spacer(modifier = Modifier.weight(1f))
             }
             LazyColumn {
                 items(reviews) { review ->
