@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -103,10 +104,12 @@ private fun FilmScreen(filmId: String, username: String, currentActivity: FilmVi
 
 fun goToReviewsViewsActivity(
     filmKey: String,
+    username: String,
     currentActivity: FilmViewActivity
 ) {
     val intent = Intent(currentActivity, ReviewsViewsActivity::class.java)
     intent.putExtra("film_key", filmKey)
+    intent.putExtra("user_username", username)
     currentActivity.startActivity(intent)
 }
 
@@ -270,6 +273,8 @@ private fun ComposeReviewSection(
 ) {
     var isUserLeavingReview by remember { mutableStateOf(false) }
     var isUserSettingDateWatched by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     Button(
         onClick = { isUserLeavingReview = true },
         modifier = Modifier
@@ -292,7 +297,7 @@ private fun ComposeReviewSection(
                 Row( modifier = Modifier
                     .fillMaxWidth()
                     .align(alignment = Alignment.Start)
-                    .clickable(onClick = {isUserSettingDateWatched = true})
+                    .clickable(onClick = { isUserSettingDateWatched = true })
                     .padding(5.dp),
                     horizontalArrangement = Arrangement.Center,
                     ){
@@ -332,12 +337,25 @@ private fun ComposeReviewSection(
                     }
                     TextButton(
                         onClick = {
-                            database.addReview(
-                                film.getKey(),
-                                Review(username = username, body = reviewInput)
-                            )
-                            database.addFilmWatchedByUser(username = username, filmKey = film.getKey(), filmWatchedByUser = FilmWatchedByUser(film.getName(), Date(dateWatched!!)))
-                            isUserLeavingReview = false
+                            var dateWatchedValidationResponse = Validate.watchedDate(dateWatched!!)
+                            if (dateWatchedValidationResponse.getIsValidated()){
+                                database.addReview(
+                                    film.getKey(),
+                                    Review(username = username, body = reviewInput)
+                                )
+                                database.addFilmWatchedByUser(
+                                    username = username,
+                                    filmKey = film.getKey(),
+                                    filmWatchedByUser = FilmWatchedByUser(
+                                        film.getName(),
+                                        Date(dateWatched!!)
+                                    )
+                                )
+                                isUserLeavingReview = false
+                            } else {
+                                errorMessage = dateWatchedValidationResponse.getErrorMessage()
+                                showErrorDialog = true
+                            }
                         },
                         modifier = Modifier.padding(8.dp),
                     ) {
@@ -347,8 +365,20 @@ private fun ComposeReviewSection(
             }
         }
     }
+    if (showErrorDialog){
+        AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showErrorDialog = false }) {
+                    Text("OK")
+                }
+            },
+            title = { Text("Error adding review") },
+            text = { Text("You cannot select a date in the future.") }
+        )
+    }
     Button(
-        onClick = { goToReviewsViewsActivity(film.getKey(), currentActivity)},
+        onClick = { goToReviewsViewsActivity(film.getKey(), username, currentActivity)},
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 5.dp, end = 5.dp)

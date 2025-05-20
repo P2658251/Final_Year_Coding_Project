@@ -1,5 +1,7 @@
 package com.example.final_year_coding_project
 
+import java.util.Date
+
 
 class Validate {
     companion object {
@@ -34,6 +36,13 @@ class Validate {
             if (doesPasswordContainAnySpaces)
                 return ValidateResponse(false, errorMessage = "Password should not have any spaces in it")
 
+
+            return ValidateResponse(true)
+        }
+
+        fun watchedDate(dateWatched: Long): ValidateResponse {
+            if(dateWatched > Date().time)
+                return ValidateResponse(false, errorMessage = "Date Watched Can't be in the future")
 
             return ValidateResponse(true)
         }
