@@ -338,7 +338,8 @@ private fun ComposeReviewSection(
                     TextButton(
                         onClick = {
                             var dateWatchedValidationResponse = Validate.watchedDate(dateWatched!!)
-                            if (dateWatchedValidationResponse.getIsValidated()){
+                            var reviewBodyValidationResponse = Validate.reviewBody(reviewInput.trim())
+                            if (dateWatchedValidationResponse.getIsValidated() && reviewBodyValidationResponse.getIsValidated()){
                                 database.addReview(
                                     film.getKey(),
                                     Review(username = username, body = reviewInput)
@@ -352,8 +353,11 @@ private fun ComposeReviewSection(
                                     )
                                 )
                                 isUserLeavingReview = false
-                            } else {
+                            } else if (dateWatchedValidationResponse.getIsValidated() == false){
                                 errorMessage = dateWatchedValidationResponse.getErrorMessage()
+                                showErrorDialog = true
+                            } else {
+                                errorMessage = reviewBodyValidationResponse.getErrorMessage()
                                 showErrorDialog = true
                             }
                         },

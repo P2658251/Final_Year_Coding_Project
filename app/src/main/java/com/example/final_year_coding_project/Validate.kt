@@ -46,6 +46,18 @@ class Validate {
 
             return ValidateResponse(true)
         }
+
+        fun reviewBody(reviewBody: String): ValidateResponse {
+            val isReviewLongEnough = reviewBody.length >= 30
+            if (!isReviewLongEnough)
+                return ValidateResponse(false, "Your review is too short, it needs to be at least 30 characters. \nCurrently ${reviewBody.length}")
+
+            val isReviewShortEnough = reviewBody.length <= 1000
+            if (!isReviewShortEnough)
+                return ValidateResponse(false, "Your review is too long it needs to be at most 100 characters. \nCurrently ${reviewBody.length}")
+
+            return ValidateResponse(true)
+        }
     }
 }
 
