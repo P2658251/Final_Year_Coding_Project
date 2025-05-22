@@ -1,6 +1,5 @@
 package com.example.final_year_coding_project
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,27 +39,24 @@ class FilmsViewsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val username = intent.getStringExtra("user_username") ?: ""
-
+        val database = Database()
         setContent {
-            FilmsViewsScreen(this, username)
+            FilmsViewsScreen(this, username, FilmsViewsModel(database))
         }
     }
 }
 
 @Composable
-private fun FilmsViewsScreen(activity: FilmsViewsActivity, username: String) {
-    val database = Database()
-    val films = remember { mutableStateListOf<Film>() }
+private fun FilmsViewsScreen(activity: FilmsViewsActivity, username: String, filmsViewsModel: FilmsViewsModel) {
+
+    val films = filmsViewsModel.films
     var searchQuery by remember { mutableStateOf("") }
     val filteredFilms = films.filter { film ->
         film.getName().contains(searchQuery, ignoreCase = true) or film.getDirector().contains(searchQuery, ignoreCase = true)
     }
 
     LaunchedEffect(Unit) {
-        database.getAllFilms { fetchedFilms ->
-            films.clear()
-            films.addAll(fetchedFilms)
-        }
+        filmsViewsModel.loadFilms()
     }
 
     Column(modifier = Modifier
@@ -91,18 +86,23 @@ private fun FilmsViewsScreen(activity: FilmsViewsActivity, username: String) {
         }
         LazyColumn {
             items(filteredFilms) {film ->
-                FilmItem(film, username, activity)
+                FilmItem(film, username, activity, filmsViewsModel)
             }
         }
     }
 }
 
 @Composable
-private fun FilmItem(film: Film, username: String, activity: FilmsViewsActivity){
+private fun FilmItem(
+    film: Film,
+    username: String,
+    activity: FilmsViewsActivity,
+    filmsViewsModel: FilmsViewsModel
+){
     Card(modifier = Modifier
         .fillMaxWidth()
         .padding(6.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        onClick = { goToFilmView(film, username, activity) }) {
+        onClick = { filmsViewsModel.goToFilmView(film, username, activity) }) {
         Row (modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically){
             AsyncImage(
                 model = film.getPosterImage(),
@@ -124,15 +124,4 @@ private fun FilmItem(film: Film, username: String, activity: FilmsViewsActivity)
             }
         }
     }
-}
-
-private fun goToFilmView(
-    film: Film,
-    username: String,
-    activity: FilmsViewsActivity
-) {
-    val intent = Intent(activity, FilmViewActivity::class.java)
-    intent.putExtra("film_key", film.getKey())
-    intent.putExtra("user_username", username)
-    activity.startActivity(intent)
 }
