@@ -1,6 +1,5 @@
 package com.example.final_year_coding_project
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,8 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.final_year_coding_project.model.Database
 import com.example.final_year_coding_project.model.Review
+import com.example.final_year_coding_project.viewModel.ReviewsViewModel
 
 class ReviewsViewsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,22 +35,23 @@ class ReviewsViewsActivity : ComponentActivity() {
 
         val filmKey = intent.getStringExtra("film_key") ?: ""
         val username = intent.getStringExtra("user_username") ?: ""
+        val database = Database()
 
         setContent {
-            ReviewsScreen(filmKey, username, this)
+            ReviewsScreen(filmKey, username, this, ReviewsViewModel(database))
         }
     }
 
     @Composable
-    private fun ReviewsScreen(filmKey: String, username: String, currentActivity: ReviewsViewsActivity) {
-        val database = Database()
-        val reviews = remember { mutableStateListOf<Review>() }
-
+    private fun ReviewsScreen(
+        filmKey: String,
+        username: String,
+        currentActivity: ReviewsViewsActivity,
+        reviewsViewModel: ReviewsViewModel
+    ) {
+        val reviews = reviewsViewModel.reviews
         LaunchedEffect(Unit) {
-            database.getReviewsByFilmKey(filmKey) { fetchedFilms ->
-                reviews.clear()
-                reviews.addAll(fetchedFilms)
-            }
+            reviewsViewModel.loadReviews(filmKey)
         }
         Column(modifier = Modifier
             .fillMaxWidth()
@@ -68,10 +67,7 @@ class ReviewsViewsActivity : ComponentActivity() {
             ) {
                 TextButton(
                     onClick = {
-                        val intent = Intent(currentActivity, FilmViewActivity::class.java)
-                        intent.putExtra("user_username", username)
-                        intent.putExtra("film_key", filmKey)
-                        currentActivity.startActivity(intent)
+                        reviewsViewModel.gotToFilmViewActivity(username, filmKey, currentActivity)
                     },
                     modifier = Modifier.weight(1f),
                 ) {
