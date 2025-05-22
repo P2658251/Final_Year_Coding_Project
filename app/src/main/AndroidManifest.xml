@@ -13,13 +13,13 @@
         android:theme="@style/Theme.Final_Year_Coding_Project"
         tools:targetApi="31">
         <activity
-            android:name=".ReviewsViewsActivity"
+            android:name=".view.ReviewsViewsActivity"
             android:exported="false" />
         <activity
-            android:name=".CreateAccountActivity"
+            android:name=".view.CreateAccountActivity"
             android:exported="false" />
         <activity
-            android:name=".UserLoginActivity"
+            android:name=".view.UserLoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,10 +28,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FilmsViewsActivity"
+            android:name=".view.FilmsViewsActivity"
             android:exported="true" />
         <activity
-            android:name=".FilmViewActivity"
+            android:name=".view.FilmViewActivity"
             android:exported="true">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

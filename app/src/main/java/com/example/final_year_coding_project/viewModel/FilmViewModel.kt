@@ -5,8 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.final_year_coding_project.FilmViewActivity
-import com.example.final_year_coding_project.ReviewsViewsActivity
+import com.example.final_year_coding_project.view.FilmViewActivity
+import com.example.final_year_coding_project.view.ReviewsViewsActivity
 import com.example.final_year_coding_project.model.Database
 import com.example.final_year_coding_project.model.Film
 

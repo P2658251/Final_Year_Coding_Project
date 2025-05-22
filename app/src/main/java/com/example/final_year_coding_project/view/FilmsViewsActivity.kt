@@ -1,4 +1,4 @@
-package com.example.final_year_coding_project
+package com.example.final_year_coding_project.view
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -60,33 +60,37 @@ private fun FilmsViewsScreen(activity: FilmsViewsActivity, username: String, fil
         filmsViewsModel.loadFilms()
     }
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally)
+    Column(
+        modifier = Modifier.Companion
+            .fillMaxWidth()
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.Companion.CenterHorizontally
+    )
     {
-        Row (modifier = Modifier
-            .background(Color.DarkGray)
-            .fillMaxWidth(), horizontalArrangement = Arrangement.Center){
-            Column(horizontalAlignment = Alignment.CenterHorizontally){
+        Row(
+            modifier = Modifier.Companion
+                .background(Color.Companion.DarkGray)
+                .fillMaxWidth(), horizontalArrangement = Arrangement.Center
+        ) {
+            Column(horizontalAlignment = Alignment.Companion.CenterHorizontally) {
                 Text(
                     text = "Films",
-                    modifier = Modifier.padding(top = 20.dp),
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.Companion.padding(top = 20.dp),
+                    color = Color.Companion.White,
+                    fontWeight = FontWeight.Companion.SemiBold,
                     fontSize = 30.sp
                 )
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    label = { Text("Search films...", color = Color.White) },
+                    label = { Text("Search films...", color = Color.Companion.White) },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.Companion.padding(bottom = 16.dp)
                 )
             }
         }
         LazyColumn {
-            items(filteredFilms) {film ->
+            items(filteredFilms) { film ->
                 FilmItem(film, username, activity, filmsViewsModel)
             }
         }
@@ -100,27 +104,31 @@ private fun FilmItem(
     activity: FilmsViewsActivity,
     filmsViewsModel: FilmsViewsModel
 ){
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(6.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+    Card(
+        modifier = Modifier.Companion
+            .fillMaxWidth()
+            .padding(6.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         onClick = { filmsViewsModel.goToFilmView(film, username, activity) }) {
-        Row (modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically){
+        Row(
+            modifier = Modifier.Companion.padding(10.dp),
+            verticalAlignment = Alignment.Companion.CenterVertically
+        ) {
             AsyncImage(
                 model = film.getPosterImage(),
                 contentDescription = null,
-                modifier = Modifier
+                modifier = Modifier.Companion
                     .size(80.dp)
             )
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.Companion.padding(16.dp)) {
                 Text(
                     text = "${film.getName()} (${film.getReleaseDate()})",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Companion.SemiBold
                 )
                 Text(
                     text = "Directed by: ${film.getDirector()}",
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = Color.Companion.Gray
                 )
             }
         }

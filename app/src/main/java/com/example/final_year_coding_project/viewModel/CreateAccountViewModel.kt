@@ -5,8 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.final_year_coding_project.CreateAccountActivity
-import com.example.final_year_coding_project.UserLoginActivity
+import com.example.final_year_coding_project.view.CreateAccountActivity
+import com.example.final_year_coding_project.view.UserLoginActivity
 import com.example.final_year_coding_project.model.Database
 import com.example.final_year_coding_project.model.HashPassword
 import com.example.final_year_coding_project.model.User

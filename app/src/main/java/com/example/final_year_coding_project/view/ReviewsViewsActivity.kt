@@ -1,4 +1,4 @@
-package com.example.final_year_coding_project
+package com.example.final_year_coding_project.view
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -53,44 +53,46 @@ class ReviewsViewsActivity : ComponentActivity() {
         LaunchedEffect(Unit) {
             reviewsViewModel.loadReviews(filmKey)
         }
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally)
+        Column(
+            modifier = Modifier.Companion
+                .fillMaxWidth()
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.Companion.CenterHorizontally
+        )
         {
             Row(
-                modifier = Modifier
-                    .background(Color.DarkGray)
+                modifier = Modifier.Companion
+                    .background(Color.Companion.DarkGray)
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Companion.CenterVertically
             ) {
                 TextButton(
                     onClick = {
                         reviewsViewModel.gotToFilmViewActivity(username, filmKey, currentActivity)
                     },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.Companion.weight(1f),
                 ) {
                     Text(
                         text = "< Back",
-                        color = Color.Black
+                        color = Color.Companion.Black
                     )
                 }
 
                 Box(
-                    modifier = Modifier.weight(1f),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.Companion.weight(1f),
+                    contentAlignment = Alignment.Companion.Center
                 ) {
                     Text(
                         text = "Reviews",
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Companion.White,
+                        fontWeight = FontWeight.Companion.SemiBold,
                         fontSize = 30.sp
                     )
                 }
 
                 // Spacer to balance the layout visually
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.Companion.weight(1f))
             }
             LazyColumn {
                 items(reviews) { review ->
@@ -102,29 +104,34 @@ class ReviewsViewsActivity : ComponentActivity() {
 
     @Composable
     private fun ReviewItem(review: Review){
-        Card(modifier = Modifier
-            .fillMaxWidth()
-            .padding(6.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
-            Row (modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically){
-                Column(modifier = Modifier.padding(16.dp)) {
+        Card(
+            modifier = Modifier.Companion
+                .fillMaxWidth()
+                .padding(6.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        ) {
+            Row(
+                modifier = Modifier.Companion.padding(10.dp),
+                verticalAlignment = Alignment.Companion.CenterVertically
+            ) {
+                Column(modifier = Modifier.Companion.padding(16.dp)) {
                     Row {
                         Text(
                             text = review.getUsername(),
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.Companion.SemiBold
                         )
                         Text(
                             text = review.calculateTimeFromReview(),
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.weight(1f)
+                            fontWeight = FontWeight.Companion.SemiBold,
+                            textAlign = TextAlign.Companion.End,
+                            modifier = Modifier.Companion.weight(1f)
                         )
                     }
                     Text(
                         text = review.getBody(),
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = Color.Companion.Gray
                     )
                 }
             }
