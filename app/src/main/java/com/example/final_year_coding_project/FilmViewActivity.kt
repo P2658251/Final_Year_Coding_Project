@@ -30,7 +30,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,7 +46,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import com.example.final_year_coding_project.Model.Database
-import com.example.final_year_coding_project.Model.Film
 import com.example.final_year_coding_project.Model.FilmWatchedByUser
 import com.example.final_year_coding_project.Model.Review
 import java.text.SimpleDateFormat
@@ -60,21 +58,25 @@ class FilmViewActivity : ComponentActivity() {
 
         val filmKey = intent.getStringExtra("film_key") ?: ""
         val username = intent.getStringExtra("user_username") ?: ""
+        val database = Database()
         setContent {
-            FilmScreen(filmId = filmKey, username, this)
+            FilmScreen(filmKey = filmKey, username, this, FilmViewModel(database), ReviewViewModel(database))
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FilmScreen(filmId: String, username: String, currentActivity: FilmViewActivity) {
-    val database = Database()
-
-    val filmLiveData = database.getFilmByKey(filmId).observeAsState(initial = Film())
-    var film by remember { mutableStateOf(filmLiveData.value) }
-    LaunchedEffect(filmLiveData.value) {
-        film = filmLiveData.value
+private fun FilmScreen(
+    filmKey: String,
+    username: String,
+    currentActivity: FilmViewActivity,
+    filmViewModel: FilmViewModel,
+    reviewViewModel: ReviewViewModel
+) {
+    val film = filmViewModel.film
+    LaunchedEffect(Unit) {
+        filmViewModel.loadFilm(filmKey, username)
     }
 
     val backgroundBrush = Brush.verticalGradient(listOf(Color.White, Color.DarkGray))
@@ -99,10 +101,10 @@ private fun FilmScreen(filmId: String, username: String, currentActivity: FilmVi
                 color = Color.Black
             )
         }
-        ComposeFilmDetails(film)
-        film = composeLikeAndDislikeButtons(film, username, database)
-        ComposeRatingsRatioBar(film)
-        ComposeReviewSection(database, film, username, currentActivity)
+        ComposeFilmDetails(filmViewModel)
+        ComposeLikeAndDislikeButtons(username, filmViewModel)
+        ComposeRatingsRatioBar(filmViewModel)
+        ComposeReviewSection(reviewViewModel, filmViewModel, username, currentActivity)
     }
 }
 
@@ -118,7 +120,8 @@ fun goToReviewsViewsActivity(
 }
 
 @Composable
-private fun ComposeFilmDetails(film: Film) {
+private fun ComposeFilmDetails(filmViewModel: FilmViewModel) {
+    var film = filmViewModel.film
     Row(modifier = Modifier.padding(20.dp)) {
         Text(
             text = film.getName(),
@@ -152,20 +155,17 @@ private fun ComposeFilmDetails(film: Film) {
 }
 
 @Composable
-private fun composeLikeAndDislikeButtons(
-    film: Film,
+private fun ComposeLikeAndDislikeButtons(
     username: String,
-    database: Database
-): Film {
-    var film1 = film
-    var hasLiked by remember { mutableStateOf(false) }
-    hasLiked = film1.getLikedBy().contains(username)
-    var hasDisliked by remember { mutableStateOf(false) }
-    hasDisliked = film1.getDislikedBy().contains(username)
+    filmViewModel: FilmViewModel
+){
+    var film = filmViewModel.film
+    var hasLiked = filmViewModel.hasLiked
+    var hasDisliked = filmViewModel.hasDisliked
 
     Row {
         Text(
-            text = film1.getLikes().toString(),
+            text = film.getLikes().toString(),
             textAlign = TextAlign.Start,
             color = Color.Green,
             modifier = Modifier
@@ -176,31 +176,7 @@ private fun composeLikeAndDislikeButtons(
         val colourOfLikeButton = if (!hasLiked) Color.DarkGray else Color.Green
         Button(
             onClick = {
-                var newLikes = film1.getLikes()
-                var newDislikes = film1.getDislikes()
-
-                if (hasLiked) {
-                    database.removeLikeFromFilmById(film1.getKey(), username)
-                    newLikes -= 1
-
-                    hasLiked = false
-                } else if (hasDisliked) {
-                    database.addLikeToFilmById(film1.getKey(), username)
-                    newLikes += 1
-
-                    database.removeDislikeFromFilmById(film1.getKey(), username)
-                    newDislikes -= 1
-
-                    hasLiked = true
-                    hasDisliked = false
-                } else {
-                    database.addLikeToFilmById(film1.getKey(), username)
-                    newLikes += 1
-
-                    hasLiked = true
-                }
-
-                film1 = film1.copy(likes = newLikes, dislikes = newDislikes)
+                filmViewModel.likeFilm(username)
             }, colors = ButtonDefaults.buttonColors(containerColor = colourOfLikeButton),
             modifier = Modifier.offset((-50).dp)
         ) {
@@ -210,38 +186,14 @@ private fun composeLikeAndDislikeButtons(
         val colourOfDislikeButton = if (!hasDisliked) Color.DarkGray else Color.Red
         Button(
             onClick = {
-                var newLikes = film1.getLikes()
-                var newDislikes = film1.getDislikes()
-
-                if (hasDisliked) {
-                    database.removeDislikeFromFilmById(film1.getKey(), username)
-                    newDislikes -= 1
-
-                    hasDisliked = false
-                } else if (hasLiked) {
-                    database.addDislikeToFilmById(film1.getKey(), username)
-                    newDislikes += 1
-
-                    database.removeLikeFromFilmById(film1.getKey(), username)
-                    newLikes -= 1
-
-                    hasDisliked = true
-                    hasLiked = false
-                } else {
-                    database.addDislikeToFilmById(film1.getKey(), username)
-                    newDislikes += 1
-
-                    hasDisliked = true
-                }
-
-                film1 = film1.copy(likes = newLikes, dislikes = newDislikes)
+                filmViewModel.dislikeFilm(username)
             }, colors = ButtonDefaults.buttonColors(containerColor = colourOfDislikeButton),
             modifier = Modifier.offset(50.dp)
         ) {
             Text("👎")
         }
         Text(
-            text = film1.getDislikes().toString(),
+            text = film.getDislikes().toString(),
             textAlign = TextAlign.End,
             color = Color.Red,
             modifier = Modifier
@@ -249,11 +201,11 @@ private fun composeLikeAndDislikeButtons(
                 .offset(-20.dp)
         )
     }
-    return film1
 }
 
 @Composable
-private fun ComposeRatingsRatioBar(film: Film) {
+private fun ComposeRatingsRatioBar(filmViewModel: FilmViewModel) {
+    var film = filmViewModel.film
     val colourOfRatingBar =
         if (film.getLikes() == 0 && film.getDislikes() == 0) Color.DarkGray else Color.Green
     val trackColourOfRatingBar =
@@ -270,15 +222,14 @@ private fun ComposeRatingsRatioBar(film: Film) {
 
 @Composable
 private fun ComposeReviewSection(
-    database: Database,
-    film: Film,
+    reviewViewModel: ReviewViewModel,
+    filmViewModel: FilmViewModel,
     username: String,
     currentActivity: FilmViewActivity
 ) {
+    var film = filmViewModel.film
     var isUserLeavingReview by remember { mutableStateOf(false) }
     var isUserSettingDateWatched by remember { mutableStateOf(false) }
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
     Button(
         onClick = { isUserLeavingReview = true },
         modifier = Modifier
@@ -289,8 +240,6 @@ private fun ComposeReviewSection(
     }
     if (isUserLeavingReview) {
         Dialog(onDismissRequest = { isUserLeavingReview = false }) {
-            var reviewInput by rememberSaveable { mutableStateOf("") }
-            var dateWatched by remember { mutableStateOf<Long?>(System.currentTimeMillis()) }
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -305,16 +254,12 @@ private fun ComposeReviewSection(
                     .padding(5.dp),
                     horizontalArrangement = Arrangement.Center,
                     ){
-                    var date = Date()
-                    if (dateWatched != null) {
-                        date = Date(dateWatched!!)
-                    }
-                    val formattedDate = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(date)
+                    val formattedDate = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(reviewViewModel.dateWatched))
                     Text("Date watched: $formattedDate")
                     if (isUserSettingDateWatched){
                         DatePickerModal(
                             onDateSelected = {
-                                dateWatched = it
+                                reviewViewModel.updateDateWatched(it)
                                 isUserSettingDateWatched = false
                             },
                             onDismiss = { isUserSettingDateWatched = false }
@@ -322,8 +267,8 @@ private fun ComposeReviewSection(
                     }
                 }
                 TextField(
-                    value = reviewInput,
-                    onValueChange = { reviewInput = it },
+                    value = reviewViewModel.reviewInput,
+                    onValueChange = { reviewViewModel.updateReviewInput(it) },
                     label = { Text("Leave a review") },
                     modifier = Modifier.height(275.dp)
                 )
@@ -341,28 +286,8 @@ private fun ComposeReviewSection(
                     }
                     TextButton(
                         onClick = {
-                            var dateWatchedValidationResponse = Validate.watchedDate(dateWatched!!)
-                            var reviewBodyValidationResponse = Validate.reviewBody(reviewInput.trim())
-                            if (dateWatchedValidationResponse.getIsValidated() && reviewBodyValidationResponse.getIsValidated()){
-                                database.addReview(
-                                    film.getKey(),
-                                    Review(username = username, body = reviewInput)
-                                )
-                                database.addFilmWatchedByUser(
-                                    username = username,
-                                    filmKey = film.getKey(),
-                                    filmWatchedByUser = FilmWatchedByUser(
-                                        film.getName(),
-                                        Date(dateWatched!!)
-                                    )
-                                )
+                            reviewViewModel.saveReview(film, username) {
                                 isUserLeavingReview = false
-                            } else if (dateWatchedValidationResponse.getIsValidated() == false){
-                                errorMessage = dateWatchedValidationResponse.getErrorMessage()
-                                showErrorDialog = true
-                            } else {
-                                errorMessage = reviewBodyValidationResponse.getErrorMessage()
-                                showErrorDialog = true
                             }
                         },
                         modifier = Modifier.padding(8.dp),
@@ -373,16 +298,16 @@ private fun ComposeReviewSection(
             }
         }
     }
-    if (showErrorDialog){
+    if (reviewViewModel.showErrorDialog){
         AlertDialog(
-            onDismissRequest = { showErrorDialog = false },
+            onDismissRequest = { reviewViewModel.showErrorDialog = false },
             confirmButton = {
-                TextButton(onClick = { showErrorDialog = false }) {
+                TextButton(onClick = { reviewViewModel.showErrorDialog = false }) {
                     Text("OK")
                 }
             },
             title = { Text("Error adding review") },
-            text = { Text("You cannot select a date in the future.") }
+            text = { Text(reviewViewModel.errorMessage) }
         )
     }
     Button(
