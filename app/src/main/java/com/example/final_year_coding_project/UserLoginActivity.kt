@@ -1,6 +1,5 @@
 package com.example.final_year_coding_project
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,7 +22,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,20 +34,20 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.final_year_coding_project.model.Database
-import com.example.final_year_coding_project.model.HashPassword
-import com.example.final_year_coding_project.model.User
+import com.example.final_year_coding_project.viewModel.UserLoginViewModel
 
 class UserLoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val database = Database()
         setContent {
-            UserLoginScreen(this)
+            UserLoginScreen(this, UserLoginViewModel(database))
         }
     }
 }
 
 @Composable
-private fun UserLoginScreen(activity: UserLoginActivity) {
+private fun UserLoginScreen(activity: UserLoginActivity, userLoginViewModel: UserLoginViewModel) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()) {
@@ -63,28 +61,21 @@ private fun UserLoginScreen(activity: UserLoginActivity) {
             verticalArrangement = Arrangement.Bottom
         ) {
             Text(text = "Please Login to your account", modifier = Modifier.padding(top = 5.dp), fontWeight = FontWeight.SemiBold)
-            var usernameInput by remember { mutableStateOf("") }
             TextField(
-                value = usernameInput,
-                onValueChange = { usernameInput = it },
+                value = userLoginViewModel.usernameInput,
+                onValueChange = { userLoginViewModel.updateUsername(it) },
                 label = { Text("Enter your username") },
                 modifier = Modifier.padding(top = 5.dp)
             )
-            var passwordInput by remember { mutableStateOf("") }
-            passwordInput = composePasswordTextField("Enter your password")
-            val database = Database()
-            val user = database.getUserByKey(usernameInput).observeAsState(initial = User()).value
-            var errorMessage by remember { mutableStateOf("") }
+            userLoginViewModel.updatePassword(composePasswordTextField("Enter your password"))
             Button(onClick = {
-                if (!canLogin(activity, passwordInput, user)){
-                    errorMessage = "Username and Password do not match"
-                }
+                userLoginViewModel.login(activity)
             }) {
                 Text(text = "Login", color = Color.White)
             }
-            Text(text = errorMessage, color = Color.Red)
+            Text(text = userLoginViewModel.errorMessage, color = Color.Red)
             Text(text = "Don't have an account?", modifier = Modifier.padding(top = 10.dp))
-            TextButton(onClick = {goToCreateAccountActivity(activity)}) {
+            TextButton(onClick = {userLoginViewModel.goToCreateAccountActivity(activity)}) {
                 Text(text = "Create one", textDecoration = TextDecoration.Underline)
             }
         }
@@ -113,20 +104,4 @@ fun composePasswordTextField(textFieldLabel: String): String {
 
     var passwordInput = passwordTextFieldState.text.toString()
     return passwordInput
-}
-
-private fun canLogin(activity: UserLoginActivity, passwordInput: String, user: User): Boolean {
-    if (user.getUsername() != "" && (HashPassword.checkPassword(passwordInput, user.getPassword()))){
-        val intent = Intent(activity, FilmsViewsActivity::class.java)
-        intent.putExtra("user_username", user.getUsername())
-        activity.startActivity(intent)
-        return true
-    }
-
-    return false
-}
-
-private fun goToCreateAccountActivity(activity: UserLoginActivity) {
-    val intent = Intent(activity, CreateAccountActivity::class.java)
-    activity.startActivity(intent)
 }
