@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.final_year_coding_project.Model.Database
 import com.example.final_year_coding_project.Model.Film
-import com.example.final_year_coding_project.Model.FilmWatchedByUser
 
 class FilmViewModel(private val database: Database) : ViewModel() {
     var film by mutableStateOf(Film())
