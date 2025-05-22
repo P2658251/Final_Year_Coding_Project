@@ -34,6 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.final_year_coding_project.Model.Database
+import com.example.final_year_coding_project.Model.Film
 
 class FilmsViewsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

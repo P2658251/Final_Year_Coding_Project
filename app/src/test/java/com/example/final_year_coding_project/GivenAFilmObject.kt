@@ -1,5 +1,6 @@
 package com.example.final_year_coding_project
 
+import com.example.final_year_coding_project.Model.Film
 import org.junit.Test
 import org.junit.Assert.*
 import kotlin.random.Random

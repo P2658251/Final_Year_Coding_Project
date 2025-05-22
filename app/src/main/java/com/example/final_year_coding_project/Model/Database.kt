@@ -1,8 +1,12 @@
-package com.example.final_year_coding_project
+package com.example.final_year_coding_project.Model
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.final_year_coding_project.Model.Film
+import com.example.final_year_coding_project.Model.FilmWatchedByUser
+import com.example.final_year_coding_project.Model.Review
+import com.example.final_year_coding_project.Model.User
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 

@@ -35,6 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.final_year_coding_project.Model.Database
+import com.example.final_year_coding_project.Model.User
 
 class UserLoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

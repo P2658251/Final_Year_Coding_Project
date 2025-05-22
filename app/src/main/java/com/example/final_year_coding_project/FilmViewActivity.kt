@@ -46,6 +46,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
+import com.example.final_year_coding_project.Model.Database
+import com.example.final_year_coding_project.Model.Film
+import com.example.final_year_coding_project.Model.FilmWatchedByUser
+import com.example.final_year_coding_project.Model.Review
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

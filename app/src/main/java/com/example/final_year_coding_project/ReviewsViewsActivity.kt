@@ -29,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.final_year_coding_project.Model.Database
+import com.example.final_year_coding_project.Model.Review
 
 class ReviewsViewsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +67,6 @@ class ReviewsViewsActivity : ComponentActivity() {
                     .padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Back Button on the left
                 TextButton(
                     onClick = {
                         val intent = Intent(currentActivity, FilmViewActivity::class.java)
@@ -81,7 +82,6 @@ class ReviewsViewsActivity : ComponentActivity() {
                     )
                 }
 
-                // Centered Title
                 Box(
                     modifier = Modifier.weight(1f),
                     contentAlignment = Alignment.Center
