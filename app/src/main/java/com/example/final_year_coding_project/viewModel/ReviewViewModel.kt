@@ -1,13 +1,14 @@
-package com.example.final_year_coding_project
+package com.example.final_year_coding_project.viewModel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.final_year_coding_project.Model.Database
-import com.example.final_year_coding_project.Model.Film
-import com.example.final_year_coding_project.Model.FilmWatchedByUser
-import com.example.final_year_coding_project.Model.Review
+import com.example.final_year_coding_project.model.Validate
+import com.example.final_year_coding_project.model.Database
+import com.example.final_year_coding_project.model.Film
+import com.example.final_year_coding_project.model.FilmWatchedByUser
+import com.example.final_year_coding_project.model.Review
 import java.util.Date
 
 class ReviewViewModel(private val database: Database) : ViewModel() {
@@ -30,8 +31,8 @@ class ReviewViewModel(private val database: Database) : ViewModel() {
         username: String,
         onSuccess: () -> Unit
     ) {
-        val dateValidation = Validate.watchedDate(dateWatched)
-        val reviewValidation = Validate.reviewBody(reviewInput.trim())
+        val dateValidation = Validate.Companion.watchedDate(dateWatched)
+        val reviewValidation = Validate.Companion.reviewBody(reviewInput.trim())
 
         if (dateValidation.getIsValidated() && reviewValidation.getIsValidated()) {
             database.addReview(

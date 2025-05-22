@@ -1,6 +1,6 @@
 package com.example.final_year_coding_project
 
-import com.example.final_year_coding_project.Model.User
+import com.example.final_year_coding_project.model.User
 import org.junit.Test
 import org.junit.Assert.*
 

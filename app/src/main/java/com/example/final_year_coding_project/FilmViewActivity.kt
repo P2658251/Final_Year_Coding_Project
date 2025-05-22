@@ -44,7 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
-import com.example.final_year_coding_project.Model.Database
+import com.example.final_year_coding_project.model.Database
+import com.example.final_year_coding_project.viewModel.FilmViewModel
+import com.example.final_year_coding_project.viewModel.ReviewViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,7 +59,9 @@ class FilmViewActivity : ComponentActivity() {
         val username = intent.getStringExtra("user_username") ?: ""
         val database = Database()
         setContent {
-            FilmScreen(filmKey = filmKey, username, this, FilmViewModel(database), ReviewViewModel(database))
+            FilmScreen(filmKey = filmKey, username, this, FilmViewModel(database),
+                ReviewViewModel(database)
+            )
         }
     }
 }
@@ -102,17 +106,6 @@ private fun FilmScreen(
         ComposeRatingsRatioBar(filmViewModel)
         ComposeReviewSection(reviewViewModel, filmViewModel, username, currentActivity)
     }
-}
-
-fun goToReviewsViewsActivity(
-    filmKey: String,
-    username: String,
-    currentActivity: FilmViewActivity
-) {
-    val intent = Intent(currentActivity, ReviewsViewsActivity::class.java)
-    intent.putExtra("film_key", filmKey)
-    intent.putExtra("user_username", username)
-    currentActivity.startActivity(intent)
 }
 
 @Composable
@@ -307,7 +300,7 @@ private fun ComposeReviewSection(
         )
     }
     Button(
-        onClick = { goToReviewsViewsActivity(film.getKey(), username, currentActivity)},
+        onClick = { filmViewModel.goToReviewsViewsActivity(film.getKey(), username, currentActivity)},
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 5.dp, end = 5.dp)

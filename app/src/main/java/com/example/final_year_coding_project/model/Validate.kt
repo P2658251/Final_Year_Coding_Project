@@ -1,4 +1,4 @@
-package com.example.final_year_coding_project
+package com.example.final_year_coding_project.model
 
 import java.util.Date
 

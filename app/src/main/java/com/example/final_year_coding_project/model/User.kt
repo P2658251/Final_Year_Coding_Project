@@ -1,4 +1,4 @@
-package com.example.final_year_coding_project.Model
+package com.example.final_year_coding_project.model
 
 class User(
     private val username: String = "",

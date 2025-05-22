@@ -1,4 +1,5 @@
 package com.example.final_year_coding_project
+import com.example.final_year_coding_project.model.HashPassword
 import org.junit.Test
 import org.junit.Assert.*
 

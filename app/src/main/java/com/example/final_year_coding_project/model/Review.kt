@@ -1,4 +1,4 @@
-package com.example.final_year_coding_project.Model
+package com.example.final_year_coding_project.model
 
 import java.util.Date
 import java.util.concurrent.TimeUnit
